@@ -1,49 +1,11 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
+<html lang="pt-br">
+  <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador Financeiro</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; }
-        #form-transacao, #lista-transacoes { margin-bottom: 30px; border: 1px solid #ccc; padding: 15px; border-radius: 5px; }
-        label, input, select, button { display: block; margin-bottom: 10px; }
-        input[type="number"], input[type="date"], input[type="text"], select { width: 95%; padding: 8px; border: 1px solid #ddd; border-radius: 3px; }
-        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; cursor: pointer; border-radius: 3px; }
-        .transacao-item { padding: 10px; border-bottom: 1px dotted #eee; display: flex; justify-content: space-between; }
-        .receita { color: green; font-weight: bold; }
-        .despesa { color: red; font-weight: bold; }
-    </style>
-</head>
-<body>
-    <h1>Gerenciador Financeiro</h1>
-
-    <div id="form-transacao">
-        <h2>Nova Transação</h2>
-        <label for="tipo">Tipo:</label>
-        <select id="tipo">
-            <option value="receita">Receita</option>
-            <option value="despesa">Despesa</option>
-        </select>
-
-        <label for="valor">Valor:</label>
-        <input type="number" id="valor" step="0.01" required>
-
-        <label for="data">Data:</label>
-        <input type="date" id="data" required>
-
-        <label for="descricao">Descrição:</label>
-        <input type="text" id="descricao" required>
-
-        <button id="btn-salvar-transacao">Salvar Transação</button>    
-    </div>
-
-    <div id="lista-transacoes">
-        <h2>Extrato</h2>
-        <div id="extrato-container">
-            </div>
-    </div>
-
-    <script src="renderer.js"></script>
-</body>
+    <title>Gerencia Finanças</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./src/renderer.jsx"></script>
+  </body>
 </html>

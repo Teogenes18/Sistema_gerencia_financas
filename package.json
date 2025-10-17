@@ -1,20 +1,29 @@
 {
   "name": "gerencia-financas",
   "version": "1.0.0",
-  "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "cross-env NODE_ENV=development parcel serve index.html --target renderer",
+    "build": "parcel build index.html --target renderer",
+    "start": "npm run build && electron .",
+    "start-dev": "cross-env NODE_ENV=development electron ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "electron": "^38.1.2",
-    "electron-rebuild": "^3.2.9"
+  "targets": {
+    "renderer": {
+      "context": "browser",
+      "distDir": "dist",
+      "publicUrl": "./"
+    }
   },
   "dependencies": {
-    "better-sqlite3": "^12.4.1"
+    "better-sqlite3": "^12.4.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "electron": "^38.1.2",
+    "electron-rebuild": "^3.2.9",
+    "parcel": "^2.16.0",
+    "cross-env": "^7.0.3"
   }
 }
