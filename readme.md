@@ -2,7 +2,7 @@
 npm install
 
 # Recompilar módulos nativos do Electron (necessário para better-sqlite3):
-npm install --save-dev electron-rebuild && ./node_modules/.bin/electron-rebuild
+npx electron-rebuild -f -w better-sqlite3
 
 # Iniciar o app
 npm start
