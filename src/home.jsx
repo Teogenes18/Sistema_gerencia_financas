@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiLogOut } from 'react-icons/fi'; // ícone de logout
+import { FiLogOut,FiTrash2 } from 'react-icons/fi'; 
 import './style.css';
 
 export default function Home({ user, onLogout }) {
@@ -34,6 +34,18 @@ export default function Home({ user, onLogout }) {
     carregar();
   };
 
+  const excluir = async (id) => {
+    const confirmar = confirm('Tem certeza que deseja excluir esta transação?');
+    if (!confirmar) return;
+
+    try {
+      await window.api.deleteTransaction(id);
+      carregar();
+    } catch (err) {
+      console.error('Erro ao excluir transação:', err);
+    }
+  };
+
   useEffect(() => {
     carregar();
   }, []);
@@ -47,7 +59,7 @@ export default function Home({ user, onLogout }) {
           style={{
             display: 'flex',
             alignItems: 'center',
-            backgroundColor: '#e74c3c', // vermelho
+            backgroundColor: '#e74c3c', 
             color: 'white',
             border: 'none',
             padding: '8px 12px',
@@ -114,6 +126,14 @@ export default function Home({ user, onLogout }) {
               <div>{`${dia}/${mes}/${ano} - ${t.descricao}`}</div>
               <div className={t.tipo === 'receita' ? 'valor-receita' : 'valor-despesa'}>
                 {sinal + valorFormatado}
+
+                <button
+                  className="btn-excluir"
+                  onClick={() => excluir(t.id)}
+                  title="Excluir transação"
+                >
+                  <FiTrash2 />
+                </button>
               </div>
             </div>
           );

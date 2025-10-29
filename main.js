@@ -3,7 +3,6 @@ const path = require('path');
 const Database = require('better-sqlite3');
 const bcrypt = require('bcrypt');
 
-
 let mainWindow;
 
 const db = new Database(path.join(__dirname, 'financas.db'));
@@ -55,6 +54,10 @@ ipcMain.handle('addTransaction', (event, tx) => {
 
 ipcMain.handle('listTransactions', () => {
   return db.prepare('SELECT * FROM transacoes ORDER BY data DESC, id DESC').all();
+});
+
+ipcMain.handle('delete-transaction', (event, id) => {
+  db.prepare('DELETE FROM transacoes WHERE id = ?').run(id);
 });
 
 app.whenReady().then(createWindow);
@@ -110,12 +113,4 @@ ipcMain.handle('loginUser', async (event, credentials) => {
   return { success: true, message: 'Login bem-sucedido.', userId: user.id, nome: user.nome };
 });
 
-app.whenReady().then(createWindow);
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
-});
