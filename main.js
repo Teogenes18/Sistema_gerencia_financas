@@ -4,7 +4,6 @@ const Database = require('better-sqlite3');
 
 let mainWindow;
 
-// Criar/abrir banco SQLite
 const db = new Database(path.join(__dirname, 'financas.db'));
 db.exec(`
   CREATE TABLE IF NOT EXISTS transacoes (
@@ -35,7 +34,6 @@ function createWindow() {
   }
 }
 
-// IPC
 ipcMain.handle('addTransaction', (event, tx) => {
   db.prepare('INSERT INTO transacoes (tipo, valor, data, descricao) VALUES (?, ?, ?, ?)')
     .run(tx.tipo, tx.valor, tx.data, tx.descricao);
