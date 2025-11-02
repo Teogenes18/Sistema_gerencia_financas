@@ -82,3 +82,9 @@ button:hover {
   font-size: 1.2em;
   transition: 0.2s;
 }
+
+.mensagem{
+  color: red;
+  margin-bottom: 16px;
+  text-align: center;
+}

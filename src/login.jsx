@@ -6,9 +6,34 @@ export default function Login({ onLoginSuccess, onGoToRegister }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await window.api.loginUser(form);
-    setMensagem(res.message);
-    if (res.success) setTimeout(() => onLoginSuccess(res.userId, res.nome), 1000);
+    
+    if (!form.email.trim()) {
+      setMensagem('Por favor, preencha o e-mail');
+      return;
+    }
+    
+    if (!form.senha) {
+      setMensagem('Por favor, preencha a senha');
+      return;
+    }
+    
+    const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    if (!emailRegex.test(form.email)) {
+      setMensagem('E-mail inválido');
+      return;
+    }
+    
+    try {
+      const res = await window.api.loginUser(form);
+      setMensagem(res.message);
+      
+      if (res.success) {
+        setTimeout(() => onLoginSuccess(res.userId, res.nome), 1000);
+      }
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+      setMensagem('Erro ao tentar fazer login. Tente novamente.');
+    }
   };
 
   return (

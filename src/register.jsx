@@ -6,9 +6,55 @@ export default function Register({ onRegistered, onGoToLogin }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await window.api.registerUser(form);
-    setMensagem(res.message);
-    if (res.success) setTimeout(() => onRegistered(), 1500);
+    
+    setMensagem('');
+    if (!form.nome.trim()) {
+      setMensagem('Por favor, preencha o nome');
+      return;
+    }
+    
+    if (!form.email.trim()) {
+      setMensagem('Por favor, preencha o e-mail');
+      return;
+    }
+    
+    if (!form.senha) {
+      setMensagem('Por favor, preencha a senha');
+      return;
+    }
+
+    const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    if (!emailRegex.test(form.email)) {
+      setMensagem('E-mail inválido');
+      return;
+    }
+
+    if (form.senha.length < 8) {
+      setMensagem('A senha deve ter no mínimo 8 caracteres');
+      return;
+    }
+    
+    if (!/[A-Za-z]/.test(form.senha)) {
+      setMensagem('A senha deve conter letras');
+      return;
+    }
+    
+    if (!/[0-9]/.test(form.senha)) {
+      setMensagem('A senha deve conter números');
+      return;
+    }
+
+    try {
+      const res = await window.api.registerUser(form);
+      setMensagem(res.message);
+      
+      if (res.success) {
+        setTimeout(() => onRegistered(), 1500);
+      }
+    } catch (error) {
+      console.error('Erro ao cadastrar:', error);
+      setMensagem('Erro ao tentar cadastrar. Tente novamente.');
+    }
   };
 
   return (
@@ -29,7 +75,7 @@ export default function Register({ onRegistered, onGoToLogin }) {
         />
         <input
           type="password"
-          placeholder="Senha"
+          placeholder="Senha (mínimo 8 caracteres, com letras e números)"
           value={form.senha}
           onChange={e => setForm({ ...form, senha: e.target.value })}
         />

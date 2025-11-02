@@ -1,4 +1,4 @@
-19388
+19423
 64D:\Sistema_gerencia_financas\node_modules\@parcel\diagnostic\src134052038567468756 1
 86D:\Sistema_gerencia_financas\node_modules\date-fns\locale\zh-HK\_lib\localize\index.js134062516869105687 0
 79D:\Sistema_gerencia_financas\node_modules\date-fns\esm\isSameWeek\index.js.flow134062516775306483 0
@@ -26,7 +26,7 @@
 67D:\Sistema_gerencia_financas\node_modules\lodash\fp\assignInWith.js134062516762699902 0
 55D:\Sistema_gerencia_financas\node_modules\which\LICENSE134033617096759269 0
 70D:\Sistema_gerencia_financas\node_modules\date-fns\getDay\package.json134062516900863988 0
-42D:\Sistema_gerencia_financas\src\login.jsx134062220389918419 0
+42D:\Sistema_gerencia_financas\src\login.jsx134065945696429757 0
 89D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm5\internal\observable\dom\fetch.js134062516761057975 0
 82D:\Sistema_gerencia_financas\node_modules\date-fns\fp\differenceInCalendarISOWeeks134062516927934996 1
 82D:\Sistema_gerencia_financas\node_modules\date-fns\esm\eachYearOfInterval\index.js134062516812386188 0
@@ -68,7 +68,7 @@
 74D:\Sistema_gerencia_financas\node_modules\.bin\download-lmdb-prebuilds.cmd134052038590073442 0
 71D:\Sistema_gerencia_financas\node_modules\date-fns\_lib\addLeadingZeros134062516806815886 1
 59D:\Sistema_gerencia_financas\node_modules\lodash\valueOf.js134062516784309265 0
-33D:\Sistema_gerencia_financas\dist134062517462610021 1
+33D:\Sistema_gerencia_financas\dist134065944991984194 1
 84D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\eachWeekendOfYear\index.js134062516814828087 0
 90D:\Sistema_gerencia_financas\node_modules\rxjs\src\internal\observable\bindNodeCallback.ts134062516803909740 0
 93D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\ta\_lib\formatRelative\index.js134062516837324322 0
@@ -100,7 +100,7 @@
 87D:\Sistema_gerencia_financas\node_modules\rxjs\dist\cjs\internal\util\isFunction.js.map134062516789606863 0
 58D:\Sistema_gerencia_financas\node_modules\lodash\fp\all.js134062516762343016 0
 87D:\Sistema_gerencia_financas\node_modules\rxjs\dist\types\internal\operators\merge.d.ts134062516808901127 0
-40D:\Sistema_gerencia_financas\financas.db134062518874718064 0
+40D:\Sistema_gerencia_financas\financas.db134065924294320800 0
 78D:\Sistema_gerencia_financas\node_modules\@parcel\types-internal\src\unsafe.js134052038530658187 0
 58D:\Sistema_gerencia_financas\node_modules\lodash\fp\sum.js134062516776057254 0
 79D:\Sistema_gerencia_financas\node_modules\node-gyp\gyp\pylib\gyp\MSVSVersion.py134033617108481017 0
@@ -113,7 +113,7 @@
 66D:\Sistema_gerencia_financas\node_modules\nullthrows\nullthrows.js134052038531806763 0
 46D:\Sistema_gerencia_financas\node_modules\lmdb134052038532785935 1
 89D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm5\internal\observable\pairs.js.map134062516792979332 0
-39D:\Sistema_gerencia_financas\index.html134052114842678722 0
+39D:\Sistema_gerencia_financas\index.html134065944088562677 0
 84D:\Sistema_gerencia_financas\node_modules\date-fns\fp\eachWeekendOfYear\package.json134062516894679718 0
 73D:\Sistema_gerencia_financas\node_modules\update-browserslist-db\utils.js134062516752011193 0
 49D:\Sistema_gerencia_financas\node_modules\boolean134036546847294934 1
@@ -141,7 +141,7 @@
 57D:\Sistema_gerencia_financas\node_modules\aggregate-error134036546840206262 1
 48D:\Sistema_gerencia_financas\node_modules\@babel134062516745186374 1
 92D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm5\internal\observable\bindCallback.js134062516756994121 0
-36D:\Sistema_gerencia_financas\main.js134062526708437122 0
+36D:\Sistema_gerencia_financas\main.js134065924893568054 0
 75D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\formatWithOptions134062516915539026 1
 73D:\Sistema_gerencia_financas\node_modules\date-fns\locale\tr\package.json134062516905960351 0
 64D:\Sistema_gerencia_financas\node_modules\semver-compare\example134036546960044715 1
@@ -158,7 +158,7 @@
 82D:\Sistema_gerencia_financas\node_modules\type-fest\source\fixed-length-array.d.ts134062516750200697 0
 48D:\Sistema_gerencia_financas\node_modules\semver134036546959741940 1
 97D:\Sistema_gerencia_financas\node_modules\date-fns\esm\differenceInCalendarISOWeeks\index.js.flow134062516758389992 0
-39D:\Sistema_gerencia_financas\preload.js134062514333504771 0
+39D:\Sistema_gerencia_financas\preload.js134065912496020716 0
 77D:\Sistema_gerencia_financas\node_modules\date-fns\locale\fr-CA\index.js.flow134062516801072956 0
 79D:\Sistema_gerencia_financas\node_modules\date-fns\esm\monthsToYears\index.d.ts134062516925073459 0
 67D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\en-GB134062516922946262 1
@@ -186,7 +186,7 @@
 64D:\Sistema_gerencia_financas\node_modules\lodash\wrapperValue.js134062516784734016 0
 79D:\Sistema_gerencia_financas\node_modules\lzma-native\deps\include\lzma\index.h134033617116750084 0
 64D:\Sistema_gerencia_financas\node_modules\rxjs\src\internal\util134062516815796505 1
-32D:\Sistema_gerencia_financas\src134062220389933439 1
+32D:\Sistema_gerencia_financas\src134065878925215773 1
 48D:\Sistema_gerencia_financas\node_modules\braces134052038520430853 1
 83D:\Sistema_gerencia_financas\node_modules\date-fns\locale\oc\_lib\localize\index.js134062516864397962 0
 82D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\be-tarask\index.d.ts134062516922557250 0
@@ -198,20 +198,29 @@
 62D:\Sistema_gerencia_financas\node_modules\shell-quote\index.js134062516748590918 0
 56D:\Sistema_gerencia_financas\node_modules\wrappy\LICENSE134033590492598320 0
 58D:\Sistema_gerencia_financas\node_modules\node-abi\LICENSE134062516754315679 0
-40D:\Sistema_gerencia_financas\src\App.jsx134062220389908373 0
-53D:\Sistema_gerencia_financas\node_modules\clean-stack134036546851059716 1
-79D:\Sistema_gerencia_financas\node_modules\rxjs\dist\types\internal\Subject.d.ts134062516812928670 0
-70D:\Sistema_gerencia_financas\node_modules\electron\dist\locales\sv.pak134062145332884287 0
-73D:\Sistema_gerencia_financas\node_modules\date-fns\fp\nextMonday\index.js134062516846734329 0
-66D:\Sistema_gerencia_financas\node_modules\napi-build-utils\LICENSE134033594840988782 0
-90D:\Sistema_gerencia_financas\node_modules\rxjs\src\internal\scheduler\immediateProvider.ts134062516807380873 0
-87D:\Sistema_gerencia_financas\node_modules\date-fns\fp\setWeekYearWithOptions\index.d.ts134062516933189711 0
+40D:\Sistema_gerencia_financas\src\App.jsx134065916273289499 0
+83D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm\internal\ajax\errors.js.map134062516786462968 0
+60D:\Sistema_gerencia_financas\node_modules\date-fns\parseJSON134062516939273855 1
+57D:\Sistema_gerencia_financas\node_modules\lodash\unset.js134062516777879646 0
+101D:\Sistema_gerencia_financas\node_modules\lmdb\dependencies\lmdb-data-v1\libraries\liblmdb\mdb_copy.1134052038525777026 0
+80D:\Sistema_gerencia_financas\node_modules\date-fns\locale\fr\_lib\formatRelative134062516857751541 1
+83D:\Sistema_gerencia_financas\node_modules\caniuse-lite\data\features\sql-storage.js134052038542309333 0
+69D:\Sistema_gerencia_financas\node_modules\rxjs\src\internal\config.ts134062516804799437 0
+81D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm\internal\util\args.js.map134062516775808095 0
+82D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\setSeconds\index.js.flow134062516771768269 0
+57D:\Sistema_gerencia_financas\node_modules\cross-spawn\lib134036546854028344 1
+71D:\Sistema_gerencia_financas\node_modules\utility-types\dist\index.d.ts134052038522078698 0
+98D:\Sistema_gerencia_financas\node_modules\rxjs\dist\cjs\internal\scheduler\AnimationFrameAction.js134062516750633019 0
+99D:\Sistema_gerencia_financas\node_modules\electron-rebuild\node_modules\semver\internal\lrucache.js134062516750755746 0
+41D:\Sistema_gerencia_financas\src\Bank.jsx134065944899054331 0
+95D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm\internal\operators\publishReplay.js.map134062516793858353 0
+80D:\Sistema_gerencia_financas\node_modules\date-fns\fp\quartersToYears\index.d.ts134062516932615173 0
 102D:\Sistema_gerencia_financas\node_modules\node-api-version\node_modules\semver\internal\identifiers.js134062516750200697 0
 90D:\Sistema_gerencia_financas\node_modules\caniuse-lite\data\features\html-media-capture.js134052038535985266 0
 91D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm\internal\operators\delayWhen.js.map134062516785748211 0
 75D:\Sistema_gerencia_financas\node_modules\@parcel\core\src\public\Config.js134052038572454396 0
 45D:\Sistema_gerencia_financas\node_modules\ora134036546952383230 1
-41D:\Sistema_gerencia_financas\src\home.jsx134062526529957066 0
+41D:\Sistema_gerencia_financas\src\home.jsx134065945408279712 0
 65D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\getTime134062516916078125 1
 81D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm5\internal\Subscription.js134062516771085899 0
 69D:\Sistema_gerencia_financas\node_modules\tar-fs\test\fixtures\e\file134033594841158826 0
@@ -231,8 +240,9 @@
 96D:\Sistema_gerencia_financas\node_modules\rxjs\dist\types\internal\operators\mergeMapTo.d.ts.map134062516791176174 0
 76D:\Sistema_gerencia_financas\node_modules\date-fns\isSameSecond\package.json134062516902386269 0
 82D:\Sistema_gerencia_financas\node_modules\utility-types\dist\aliases-and-guards.js134052038521223721 0
-45D:\Sistema_gerencia_financas\src\register.jsx134062220389933439 0
+45D:\Sistema_gerencia_financas\src\register.jsx134065916746517775 0
 60D:\Sistema_gerencia_financas\node_modules\color-name\LICENSE134033617097033004 0
+75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.1edb9a00.js.map134065942558340989 0
 60D:\Sistema_gerencia_financas\node_modules\lodash\_Promise.js134062516761535657 0
 91D:\Sistema_gerencia_financas\node_modules\@parcel\core\node_modules\semver\functions\gte.js134052038568932178 0
 67D:\Sistema_gerencia_financas\node_modules\yargs-parser\package.json134033617097839701 0
@@ -247,7 +257,7 @@
 60D:\Sistema_gerencia_financas\node_modules\rxjs\src\webSocket134062516807623454 1
 90D:\Sistema_gerencia_financas\node_modules\rxjs\dist\types\internal\scheduler\asap.d.ts.map134062516776228425 0
 86D:\Sistema_gerencia_financas\node_modules\rxjs\dist\cjs\internal\util\isPromise.js.map134062516789793865 0
-42D:\Sistema_gerencia_financas\src\style.css134062515800159696 0
+42D:\Sistema_gerencia_financas\src\style.css134065939381473510 0
 54D:\Sistema_gerencia_financas\node_modules\undici-types134036546970356469 1
 55D:\Sistema_gerencia_financas\node_modules\lodash\map.js134062516771442482 0
 70D:\Sistema_gerencia_financas\node_modules\date-fns\fp\setYear\index.js134062516847895480 0
@@ -526,6 +536,13 @@
 80D:\Sistema_gerencia_financas\node_modules\yargs-parser\build\lib\string-utils.js134033617097318613 0
 54D:\Sistema_gerencia_financas\node_modules\caniuse-lite134052038545429933 1
 68D:\Sistema_gerencia_financas\node_modules\react-icons\lia\index.d.ts134062516903197311 0
+53D:\Sistema_gerencia_financas\node_modules\clean-stack134036546851059716 1
+79D:\Sistema_gerencia_financas\node_modules\rxjs\dist\types\internal\Subject.d.ts134062516812928670 0
+70D:\Sistema_gerencia_financas\node_modules\electron\dist\locales\sv.pak134062145332884287 0
+73D:\Sistema_gerencia_financas\node_modules\date-fns\fp\nextMonday\index.js134062516846734329 0
+66D:\Sistema_gerencia_financas\node_modules\napi-build-utils\LICENSE134033594840988782 0
+90D:\Sistema_gerencia_financas\node_modules\rxjs\src\internal\scheduler\immediateProvider.ts134062516807380873 0
+87D:\Sistema_gerencia_financas\node_modules\date-fns\fp\setWeekYearWithOptions\index.d.ts134062516933189711 0
 52D:\Sistema_gerencia_financas\node_modules\cli-cursor134036546851243746 1
 89D:\Sistema_gerencia_financas\node_modules\date-fns\locale\th\_lib\formatDistance\index.js134062516867286326 0
 91D:\Sistema_gerencia_financas\node_modules\exponential-backoff\dist\jitter\no\no.jitter.d.ts134062516755099384 0
@@ -1329,6 +1346,7 @@
 75D:\Sistema_gerencia_financas\node_modules\date-fns\esm\compareDesc\index.js134062516811443461 0
 87D:\Sistema_gerencia_financas\node_modules\yargs\build\lib\typings\yargs-parser-types.js134033617099092258 0
 83D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\ar-TN\_lib\formatLong134062516823948149 1
+72D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.9ffd5831.css134065939502750550 0
 74D:\Sistema_gerencia_financas\node_modules\yargs\lib\platform-shims\esm.mjs134033617100920278 0
 62D:\Sistema_gerencia_financas\node_modules\date-fns\esm\nextDay134062516925098460 1
 102D:\Sistema_gerencia_financas\node_modules\rxjs\dist\types\internal\operators\joinAllInternals.d.ts.map134062516790208488 0
@@ -2233,10 +2251,10 @@
 69D:\Sistema_gerencia_financas\node_modules\global-agent\dist\Logger.js134033590494997932 0
 85D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\lastDayOfYear\index.js.flow134062516769510479 0
 72D:\Sistema_gerencia_financas\node_modules\rxjs\src\internal\Scheduler.ts134062516812226627 0
+68D:\Sistema_gerencia_financas\node_modules\undici-types\readable.d.ts134033590494560445 0
 71D:\Sistema_gerencia_financas\node_modules\@parcel\error-overlay\LICENSE134052038528445629 0
 87D:\Sistema_gerencia_financas\node_modules\rxjs\dist\types\internal\operators\first.d.ts134062516806505939 0
 61D:\Sistema_gerencia_financas\node_modules\wrappy\package.json134033590492500630 0
-68D:\Sistema_gerencia_financas\node_modules\undici-types\readable.d.ts134033590494560445 0
 81D:\Sistema_gerencia_financas\node_modules\rxjs\dist\cjs\internal\util\noop.js.map134062516791593134 0
 89D:\Sistema_gerencia_financas\node_modules\date-fns\locale\hu\_lib\formatRelative\index.js134062516859640546 0
 92D:\Sistema_gerencia_financas\node_modules\rxjs\dist\cjs\internal\operators\catchError.js.map134062516777838578 0
@@ -2271,9 +2289,9 @@
 104D:\Sistema_gerencia_financas\node_modules\rxjs\dist\cjs\internal\scheduled\scheduleReadableStreamLike.js134062516770144891 0
 61D:\Sistema_gerencia_financas\node_modules\date-fns\nextFriday134062516939041529 1
 69D:\Sistema_gerencia_financas\node_modules\rxjs\webSocket\package.json134062516774532947 0
-71D:\Sistema_gerencia_financas\node_modules\date-fns\locale\ro\_lib\match134062516865296736 1
 67D:\Sistema_gerencia_financas\node_modules\ip-address\dist\ipv6.d.ts134033617100193070 0
 74D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm\operators\index.js134062516762615857 0
+71D:\Sistema_gerencia_financas\node_modules\date-fns\locale\ro\_lib\match134062516865296736 1
 73D:\Sistema_gerencia_financas\node_modules\weak-lru-cache\rollup.config.js134052038519943964 0
 60D:\Sistema_gerencia_financas\node_modules\smart-buffer\build134036546961893996 1
 79D:\Sistema_gerencia_financas\node_modules\@swc\helpers\src\_to_property_key.mjs134052038536705484 0
@@ -2368,18 +2386,6 @@
 68D:\Sistema_gerencia_financas\node_modules\date-fns\locale\fr-CH\_lib134062516857638274 1
 64D:\Sistema_gerencia_financas\node_modules\lodash\fp\mapValues.js134062516771650948 0
 107D:\Sistema_gerencia_financas\node_modules\rxjs\dist\types\internal\scheduled\scheduleAsyncIterable.d.ts.map134062516795857299 0
-83D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm\internal\ajax\errors.js.map134062516786462968 0
-60D:\Sistema_gerencia_financas\node_modules\date-fns\parseJSON134062516939273855 1
-57D:\Sistema_gerencia_financas\node_modules\lodash\unset.js134062516777879646 0
-101D:\Sistema_gerencia_financas\node_modules\lmdb\dependencies\lmdb-data-v1\libraries\liblmdb\mdb_copy.1134052038525777026 0
-80D:\Sistema_gerencia_financas\node_modules\date-fns\locale\fr\_lib\formatRelative134062516857751541 1
-83D:\Sistema_gerencia_financas\node_modules\caniuse-lite\data\features\sql-storage.js134052038542309333 0
-69D:\Sistema_gerencia_financas\node_modules\rxjs\src\internal\config.ts134062516804799437 0
-81D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm\internal\util\args.js.map134062516775808095 0
-82D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\setSeconds\index.js.flow134062516771768269 0
-57D:\Sistema_gerencia_financas\node_modules\cross-spawn\lib134036546854028344 1
-71D:\Sistema_gerencia_financas\node_modules\utility-types\dist\index.d.ts134052038522078698 0
-98D:\Sistema_gerencia_financas\node_modules\rxjs\dist\cjs\internal\scheduler\AnimationFrameAction.js134062516750633019 0
 78D:\Sistema_gerencia_financas\node_modules\utility-types\dist\mapped-types.d.ts134052038522129348 0
 91D:\Sistema_gerencia_financas\node_modules\caniuse-lite\data\features\once-event-listener.js134052038540182679 0
 60D:\Sistema_gerencia_financas\node_modules\rxjs\tsconfig.json134062516774657903 0
@@ -3262,8 +3268,8 @@
 77D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\isBefore\index.d.ts134062516916660666 0
 86D:\Sistema_gerencia_financas\node_modules\caniuse-lite\data\features\css-dir-pseudo.js134052038528057499 0
 67D:\Sistema_gerencia_financas\node_modules\sprintf-js\src\sprintf.js134033590491277713 0
-99D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm5\internal\operators\joinAllInternals.js.map134062516790259431 0
 72D:\Sistema_gerencia_financas\node_modules\sprintf-js\dist\.gitattributes134033590491016978 0
+99D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm5\internal\operators\joinAllInternals.js.map134062516790259431 0
 85D:\Sistema_gerencia_financas\node_modules\rxjs\dist\types\internal\operators\max.d.ts134062516808821417 0
 67D:\Sistema_gerencia_financas\node_modules\safer-buffer\package.json134033617098822645 0
 79D:\Sistema_gerencia_financas\node_modules\date-fns\secondsToHours\index.js.flow134062516804288405 0
@@ -3273,6 +3279,7 @@
 64D:\Sistema_gerencia_financas\node_modules\lodash\differenceBy.js134062516765975358 0
 69D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\previousDay134062516918537950 1
 80D:\Sistema_gerencia_financas\node_modules\sprintf-js\dist\angular-sprintf.min.js134033590491277713 0
+75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.973214c7.js.map134065891509432533 0
 84D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\nb\_lib\formatRelative134062516834363014 1
 80D:\Sistema_gerencia_financas\node_modules\date-fns\locale\sl\_lib\formatRelative134062516865782582 1
 68D:\Sistema_gerencia_financas\node_modules\date-fns\eachWeekendOfYear134062516910597296 1
@@ -3728,6 +3735,7 @@
 100D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm5\internal\observable\dom\WebSocketSubject.js134062516773672448 0
 67D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\endOfWeek134062516915028352 1
 59D:\Sistema_gerencia_financas\node_modules\rxjs\package.json134062516774447001 0
+72D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.d3bd676c.css134065939262074368 0
 93D:\Sistema_gerencia_financas\node_modules\rxjs\src\internal\scheduler\AnimationFrameAction.ts134062516802847309 0
 73D:\Sistema_gerencia_financas\node_modules\chrome-trace-event\package.json134052038521477703 0
 69D:\Sistema_gerencia_financas\node_modules\react-icons\sl\package.json134062516828517964 0
@@ -4210,7 +4218,6 @@
 97D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm\internal\operators\publishBehavior.js.map134062516793683166 0
 68D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\isSameYear134062516917522318 1
 85D:\Sistema_gerencia_financas\node_modules\rxjs\src\internal\operators\windowToggle.ts134062516815641753 0
-81D:\Sistema_gerencia_financas\node_modules\bcrypt\prebuilds\darwin-x64\bcrypt.node134062516757243505 0
 52D:\Sistema_gerencia_financas\node_modules\@swc\types134052038523013281 1
 78D:\Sistema_gerencia_financas\node_modules\date-fns\startOfISOWeek\package.json134062516907876226 0
 67D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\parseJSON134062516918492284 1
@@ -4482,6 +4489,7 @@
 71D:\Sistema_gerencia_financas\node_modules\rxjs\dist\types\internal\util134062516815762654 1
 88D:\Sistema_gerencia_financas\node_modules\rxjs\dist\types\internal\util\applyMixins.d.ts134062516803076725 0
 80D:\Sistema_gerencia_financas\node_modules\date-fns\locale\nl\_lib\formatDistance134062516863921086 1
+71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.765e307e.js134065903983890236 0
 92D:\Sistema_gerencia_financas\node_modules\rxjs\dist\types\internal\util\applyMixins.d.ts.map134062516775712275 0
 73D:\Sistema_gerencia_financas\node_modules\date-fns\esm\isEqual\index.d.ts134062516921015147 0
 78D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\nl\_lib\localize134062516834741751 1
@@ -6646,9 +6654,6 @@
 93D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\it\_lib\formatDistance\index.js134062516831473902 0
 62D:\Sistema_gerencia_financas\node_modules\lodash\_baseDelay.js134062516754366534 0
 98D:\Sistema_gerencia_financas\node_modules\rxjs\dist\cjs\internal\operators\combineLatestAll.js.map134062516781681827 0
-99D:\Sistema_gerencia_financas\node_modules\electron-rebuild\node_modules\semver\internal\lrucache.js134062516750755746 0
-95D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm\internal\operators\publishReplay.js.map134062516793858353 0
-80D:\Sistema_gerencia_financas\node_modules\date-fns\fp\quartersToYears\index.d.ts134062516932615173 0
 82D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm\internal\operators\race.js134062516768085866 0
 68D:\Sistema_gerencia_financas\node_modules\date-fns\fp\add\index.d.ts134062516927344857 0
 86D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm\internal\operators\raceWith.js134062516768172875 0
@@ -6814,7 +6819,6 @@
 70D:\Sistema_gerencia_financas\node_modules\electron\dist\locales\am.pak134062145317097557 0
 94D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm\internal\observable\connectable.js.map134062516784974017 0
 93D:\Sistema_gerencia_financas\node_modules\electron-rebuild\lib\test\helpers\module-setup.d.ts134033617105363542 0
-82D:\Sistema_gerencia_financas\node_modules\node-gyp\gyp\pylib\gyp\generator\msvs.py134033617108351281 0
 104D:\Sistema_gerencia_financas\node_modules\rxjs\dist\esm\internal\observable\ConnectableObservable.js.map134062516785033436 0
 66D:\Sistema_gerencia_financas\node_modules\date-fns\quartersToYears134062516939524706 1
 78D:\Sistema_gerencia_financas\node_modules\date-fns\previousSaturday\index.d.ts134062516939373540 0
@@ -7112,7 +7116,7 @@
 74D:\Sistema_gerencia_financas\node_modules\date-fns\locale\uk\_lib\localize134062516868106088 1
 93D:\Sistema_gerencia_financas\node_modules\electron-rebuild\node_modules\semver\internal\re.js134062516753081695 0
 82D:\Sistema_gerencia_financas\node_modules\rxjs\dist\cjs\internal\scheduler\asap.js134062516754880701 0
-44D:\Sistema_gerencia_financas\dist\index.html134062517462272265 0
+44D:\Sistema_gerencia_financas\dist\index.html134065944991970537 0
 86D:\Sistema_gerencia_financas\node_modules\rxjs\dist\cjs\internal\scheduler\asap.js.map134062516776228425 0
 81D:\Sistema_gerencia_financas\node_modules\date-fns\locale\be-tarask\_lib\localize134062516853570713 1
 88D:\Sistema_gerencia_financas\node_modules\date-fns\fp\lastDayOfISOWeekYear\index.js.flow134062516793424398 0
@@ -8101,6 +8105,7 @@
 94D:\Sistema_gerencia_financas\node_modules\napi-build-utils\.github\workflows\run-npm-tests.yml134033594841269397 0
 55D:\Sistema_gerencia_financas\node_modules\picomatch\lib134052038520057537 1
 59D:\Sistema_gerencia_financas\node_modules\picomatch\LICENSE134052038519397081 0
+71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.61668ef2.js134065909595927530 0
 85D:\Sistema_gerencia_financas\node_modules\exponential-backoff\src\delay\delay.base.ts134062516754512783 0
 64D:\Sistema_gerencia_financas\node_modules\picomatch\package.json134052038520306405 0
 65D:\Sistema_gerencia_financas\node_modules\lodash\_baseConforms.js134062516753982493 0
@@ -8368,6 +8373,7 @@
 89D:\Sistema_gerencia_financas\node_modules\date-fns\locale\he\_lib\formatDistance\index.js134062516858672948 0
 83D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\endOfSecond\index.js.flow134062516764005301 0
 83D:\Sistema_gerencia_financas\node_modules\node-gyp\gyp\pylib\gyp\generator\gypsh.py134033617106926813 0
+82D:\Sistema_gerencia_financas\node_modules\node-gyp\gyp\pylib\gyp\generator\msvs.py134033617108351281 0
 88D:\Sistema_gerencia_financas\node_modules\node-gyp\gyp\pylib\gyp\generator\ninja_test.py134033617108498753 0
 104D:\Sistema_gerencia_financas\node_modules\@parcel\transformer-babel\node_modules\semver\functions\lte.js134052038569027487 0
 81D:\Sistema_gerencia_financas\node_modules\date-fns\fp\lastDayOfWeek\index.js.flow134062516793546159 0
@@ -10894,6 +10900,7 @@
 69D:\Sistema_gerencia_financas\node_modules\better-sqlite3\lib\index.js134033594860553550 0
 70D:\Sistema_gerencia_financas\node_modules\get-caller-file\index.js.map134033617097149816 0
 76D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\en-CA\index.js134062516827001681 0
+75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.c7c124e0.js.map134065943446870617 0
 70D:\Sistema_gerencia_financas\node_modules\get-caller-file\package.json134033617096651248 0
 67D:\Sistema_gerencia_financas\node_modules\get-caller-file\README.md134033617097369446 0
 75D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\sk\index.d.ts134062516924332696 0
@@ -12287,6 +12294,7 @@
 70D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\max\index.js134062516817717474 0
 69D:\Sistema_gerencia_financas\node_modules\date-fns\locale\oc\index.js134062516864462927 0
 74D:\Sistema_gerencia_financas\node_modules\date-fns\locale\oc\index.js.flow134062516802254198 0
+72D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.dd27b171.css134065933324910965 0
 73D:\Sistema_gerencia_financas\node_modules\date-fns\locale\oc\package.json134062516905414768 0
 80D:\Sistema_gerencia_financas\node_modules\date-fns\locale\oc\_lib\formatDistance134062516864293523 1
 69D:\Sistema_gerencia_financas\node_modules\date-fns\esm\getWeekOfMonth134062516920679564 1
@@ -12369,6 +12377,7 @@
 89D:\Sistema_gerencia_financas\node_modules\date-fns\locale\mt\_lib\formatRelative\index.js134062516863438600 0
 73D:\Sistema_gerencia_financas\node_modules\caniuse-lite\data\regions\HT.js134052038535975218 0
 90D:\Sistema_gerencia_financas\node_modules\date-fns\esm\differenceInISOWeekYears\index.d.ts134062516912170514 0
+71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.0627bde1.js134065886465719431 0
 85D:\Sistema_gerencia_financas\node_modules\date-fns\locale\mt\_lib\formatLong\index.js134062516863402559 0
 75D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\ta\_lib\match134062516837376777 1
 69D:\Sistema_gerencia_financas\node_modules\@parcel\bundler-default\lib134052038561642950 1
@@ -12775,6 +12784,7 @@
 73D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\bg\index.js134062516825110312 0
 79D:\Sistema_gerencia_financas\node_modules\date-fns\locale\fr-CA\_lib\formatLong134062516857536414 1
 88D:\Sistema_gerencia_financas\node_modules\date-fns\locale\fr-CA\_lib\formatLong\index.js134062516857551045 0
+71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.c7c124e0.js134065943446572211 0
 71D:\Sistema_gerencia_financas\node_modules\date-fns\locale\fr\index.d.ts134062516937148353 0
 76D:\Sistema_gerencia_financas\node_modules\better-sqlite3\src\util\binder.cpp134033594859067588 0
 73D:\Sistema_gerencia_financas\node_modules\date-fns\locale\fr\package.json134062516904391350 0
@@ -12994,7 +13004,7 @@
 71D:\Sistema_gerencia_financas\node_modules\date-fns\locale\da\index.d.ts134062516936421502 0
 69D:\Sistema_gerencia_financas\node_modules\date-fns\locale\da\index.js134062516855280127 0
 74D:\Sistema_gerencia_financas\node_modules\date-fns\locale\da\index.js.flow134062516800381114 0
-76D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.b3f7b6ba.css.map134062517462577693 0
+76D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.b3f7b6ba.css.map134065938908334143 0
 73D:\Sistema_gerencia_financas\node_modules\date-fns\locale\da\package.json134062516903769140 0
 78D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\sr-Latn\index.js134062516836828766 0
 65D:\Sistema_gerencia_financas\node_modules\date-fns\locale\da\_lib134062516855240110 1
@@ -13768,6 +13778,7 @@
 82D:\Sistema_gerencia_financas\node_modules\@babel\runtime\helpers\defineProperty.js134062516755823260 0
 76D:\Sistema_gerencia_financas\node_modules\date-fns\fp\subQuarters\index.d.ts134062516933757392 0
 89D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\sr-Latn\_lib\formatDistance134062516836659892 1
+75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.61668ef2.js.map134065909596182297 0
 81D:\Sistema_gerencia_financas\node_modules\date-fns\fp\parseWithOptions\index.d.ts134062516932355058 0
 74D:\Sistema_gerencia_financas\node_modules\date-fns\fp\subQuarters\index.js134062516848630727 0
 79D:\Sistema_gerencia_financas\node_modules\date-fns\fp\subQuarters\index.js.flow134062516796440891 0
@@ -15090,6 +15101,7 @@
 90D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\isMatchWithOptions\index.js.flow134062516768035006 0
 80D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\en-IE\package.json134062516887934215 0
 84D:\Sistema_gerencia_financas\node_modules\date-fns\esm\minutesToSeconds\package.json134062516890166633 0
+71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.13487117.js134065935211210585 0
 78D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\en-AU\index.d.ts134062516922876444 0
 90D:\Sistema_gerencia_financas\node_modules\date-fns\esm\minutesToMilliseconds\index.js.flow134062516785531148 0
 89D:\Sistema_gerencia_financas\node_modules\date-fns\esm\minutesToMilliseconds\package.json134062516890146089 0
@@ -15539,6 +15551,7 @@
 80D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\it\_lib\formatLong134062516831498701 1
 87D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\it\_lib\localize\index.js134062516831566017 0
 90D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\eachYearOfInterval\index.js.flow134062516763427499 0
+75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.763c1426.js.map134065897100220341 0
 82D:\Sistema_gerencia_financas\node_modules\caniuse-lite\data\features\css-sticky.js134052038531654909 0
 89D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\it\_lib\formatLong\index.js134062516831498701 0
 75D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\is\index.d.ts134062516923627695 0
@@ -15860,6 +15873,7 @@
 72D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\ar-MA\_lib134062516823682926 1
 73D:\Sistema_gerencia_financas\node_modules\caniuse-lite\data\regions\SY.js134052038542856827 0
 83D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\ar-MA\_lib\formatLong134062516823492247 1
+75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.814a6adc.js.map134065933325102686 0
 87D:\Sistema_gerencia_financas\node_modules\date-fns\esm\fp\getWeekWithOptions\index.d.ts134062516916263584 0
 78D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\ar-MA\_lib\match134062516823682926 1
 90D:\Sistema_gerencia_financas\node_modules\date-fns\esm\locale\ar-MA\_lib\localize\index.js134062516823636132 0
@@ -16776,6 +16790,7 @@
 82D:\Sistema_gerencia_financas\node_modules\date-fns\esm\formatRFC7231\index.js.flow134062516760789593 0
 83D:\Sistema_gerencia_financas\node_modules\date-fns\esm\formatRelative\index.js.flow134062516760709181 0
 81D:\Sistema_gerencia_financas\node_modules\date-fns\esm\formatISO9075\package.json134062516877640105 0
+75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.13487117.js.map134065935211451484 0
 75D:\Sistema_gerencia_financas\node_modules\date-fns\esm\formatISO\index.d.ts134062516913102102 0
 78D:\Sistema_gerencia_financas\node_modules\date-fns\esm\formatISO\index.js.flow134062516760580300 0
 81D:\Sistema_gerencia_financas\node_modules\caniuse-lite\data\features\dom-range.js134052038533590200 0
@@ -17560,6 +17575,7 @@
 86D:\Sistema_gerencia_financas\node_modules\bcrypt\prebuilds\linux-arm\bcrypt.glibc.node134062516754457578 0
 70D:\Sistema_gerencia_financas\node_modules\aggregate-error\package.json134033617099633833 0
 85D:\Sistema_gerencia_financas\node_modules\bcrypt\prebuilds\linux-arm\bcrypt.musl.node134062516755077452 0
+81D:\Sistema_gerencia_financas\node_modules\bcrypt\prebuilds\darwin-x64\bcrypt.node134062516757243505 0
 76D:\Sistema_gerencia_financas\node_modules\bcrypt\node_modules\node-addon-api134062516756645828 1
 88D:\Sistema_gerencia_financas\node_modules\bcrypt\node_modules\node-addon-api\common.gypi134062516755323945 0
 87D:\Sistema_gerencia_financas\node_modules\bcrypt\node_modules\node-addon-api\LICENSE.md134062516756634174 0
@@ -17905,6 +17921,7 @@
 90D:\Sistema_gerencia_financas\node_modules\@swc\helpers\src\_initializer_warning_helper.mjs134052038535964077 0
 74D:\Sistema_gerencia_financas\node_modules\@swc\helpers\src\_instanceof.mjs134052038535985266 0
 87D:\Sistema_gerencia_financas\node_modules\@swc\helpers\src\_interop_require_default.mjs134052038535997249 0
+76D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.b6e13bea.css.map134065936536320623 0
 91D:\Sistema_gerencia_financas\node_modules\@swc\helpers\src\_is_native_reflect_construct.mjs134052038536054467 0
 87D:\Sistema_gerencia_financas\node_modules\@swc\helpers\src\_iterable_to_array_limit.mjs134052038536084471 0
 93D:\Sistema_gerencia_financas\node_modules\@swc\helpers\src\_iterable_to_array_limit_loose.mjs134052038536064467 0
@@ -18758,6 +18775,7 @@
 112D:\Sistema_gerencia_financas\node_modules\@parcel\node-resolver-core\node_modules\semver\internal\identifiers.js134052038565086634 0
 105D:\Sistema_gerencia_financas\node_modules\@parcel\node-resolver-core\node_modules\semver\functions\cmp.js134052038564839506 0
 108D:\Sistema_gerencia_financas\node_modules\@parcel\node-resolver-core\node_modules\semver\functions\coerce.js134052038564860053 0
+76D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.9ffd5831.css.map134065939502842592 0
 115D:\Sistema_gerencia_financas\node_modules\@parcel\node-resolver-core\node_modules\semver\functions\compare-build.js134052038564911884 0
 115D:\Sistema_gerencia_financas\node_modules\@parcel\node-resolver-core\node_modules\semver\functions\compare-loose.js134052038564932441 0
 109D:\Sistema_gerencia_financas\node_modules\@parcel\node-resolver-core\node_modules\semver\functions\compare.js134052038564942717 0
@@ -19373,17 +19391,34 @@
 69D:\Sistema_gerencia_financas\node_modules\.bin\update-browserslist-db134062516941540813 0
 73D:\Sistema_gerencia_financas\node_modules\.bin\update-browserslist-db.cmd134062516941540813 0
 73D:\Sistema_gerencia_financas\node_modules\.bin\update-browserslist-db.ps1134062516941540813 0
+75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.0627bde1.js.map134065886465929891 0
 72D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.08cade7b.css134052117859569055 0
 76D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.08cade7b.css.map134052117859690823 0
+72D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.09b70311.css134065923416336291 0
+76D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.09b70311.css.map134065923416437350 0
+71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.1edb9a00.js134065942558183925 0
 72D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.299439ce.css134060425804837432 0
 76D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.299439ce.css.map134060425805024213 0
 71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.31429e1a.js134062145431750011 0
 75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.31429e1a.js.map134062145431898269 0
 71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.64367df2.js134052117859569055 0
 75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.64367df2.js.map134052117859710559 0
+71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.6df03860.js134065880174266338 0
+75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.6df03860.js.map134065880174410630 0
+71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.763c1426.js134065897099880275 0
+75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.765e307e.js.map134065903984150514 0
+71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.76cd7600.js134065910532812915 0
+75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.76cd7600.js.map134065910533051624 0
+71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.814a6adc.js134065933324910965 0
+71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.973214c7.js134065891509136019 0
 75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.a6c76b55.js.map134052099600363606 0
-72D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.b3f7b6ba.css134062517462272265 0
+72D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.b3f7b6ba.css134065938908163704 0
+72D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.b6e13bea.css134065936536222968 0
 75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.d1ddc72d.js.map134062143560087923 0
+76D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.d3bd676c.css.map134065939262181876 0
 71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.d9f90faf.js134062517462284325 0
+76D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.dd27b171.css.map134065933325090613 0
+71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.e24d454f.js134065889890881043 0
+75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.e24d454f.js.map134065889894700529 0
 71D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.fc1927af.js134062517182381388 0
 75D:\Sistema_gerencia_financas\dist\Sistema_gerencia_financas.fc1927af.js.map134062517182490129 0

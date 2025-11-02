@@ -60,6 +60,23 @@ ipcMain.handle('delete-transaction', (event, id) => {
   db.prepare('DELETE FROM transacoes WHERE id = ?').run(id);
 });
 
+ipcMain.handle('addBank', (event, bank) => {
+  const { nome, saldo } = bank;
+
+  if(!nome || nome.trim() === '') {
+    return { success: false, message: 'O nome do banco é obrigatório.' };
+  }
+
+  const valorSaldo = parseFloat(saldo);
+  if(isNaN(valorSaldo)) {
+    return { success: false, message: 'O saldo inicial deve ser um número válido.' };
+  }
+
+  db.prepare('INSERT INTO bancos (nome, saldo) VALUES (?, ?)')
+    .run(nome.trim(), valorSaldo);
+  return { success: true, message: 'Banco cadastrado com sucesso.' };
+});
+
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
@@ -73,7 +90,6 @@ app.on('activate', () => {
 ipcMain.handle('registerUser', async (event, user) => {
   const { nome, email, senha } = user;
 
-  // Validações básicas
   if (!nome || !email || !senha)
     return { success: false, message: 'Preencha todos os campos.' };
 
@@ -88,7 +104,6 @@ ipcMain.handle('registerUser', async (event, user) => {
   if (existingUser)
     return { success: false, message: 'E-mail já cadastrado.' };
 
-  // Cria hash seguro da senha
   const hash = await bcrypt.hash(senha, 10);
 
   db.prepare('INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)').run(nome, email, hash);
@@ -110,7 +125,12 @@ ipcMain.handle('loginUser', async (event, credentials) => {
   if (!senhaOk)
     return { success: false, message: 'E-mail ou senha inválidos.' };
 
-  return { success: true, message: 'Login bem-sucedido.', userId: user.id, nome: user.nome };
+  return { 
+    success: true, 
+    message: 'Login bem-sucedido.', 
+    userId: user.email, 
+    nome: user.nome 
+  };
 });
 
 

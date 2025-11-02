@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FiLogOut,FiTrash2 } from 'react-icons/fi'; 
-import './style.css';
 
-export default function Home({ user, onLogout }) {
+export default function Home({ user, onLogout,onGoToBank }) {
   const [transacoes, setTransacoes] = useState([]);
   const [form, setForm] = useState({ tipo: 'receita', valor: '', data: '', descricao: '' });
 
@@ -53,7 +52,7 @@ export default function Home({ user, onLogout }) {
   return (
     <div className="container">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Gerencia Finanças</h1>
+        <h1>Gerenciandor Financeiro</h1>
         <button
           onClick={onLogout}
           style={{
@@ -75,6 +74,25 @@ export default function Home({ user, onLogout }) {
 
       <h2>Bem-vindo, {user.nome}!</h2>
 
+      {onGoToBank && (
+        <button
+          onClick={onGoToBank}
+          style={{
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            padding: '10px 20px',
+            cursor: 'pointer',
+            borderRadius: '4px',
+            fontWeight: 'bold',
+            marginBottom: '20px',
+            fontSize: '16px'
+          }}
+        >
+          + Cadastrar Banco
+        </button>
+      )}
+
       <form onSubmit={salvar}>
         <h2>Nova Transação</h2>
 
@@ -91,6 +109,7 @@ export default function Home({ user, onLogout }) {
         <input
           type="number"
           step="0.01"
+          min="0.01"
           value={form.valor}
           onChange={e => setForm({ ...form, valor: e.target.value })}
         />
