@@ -93,16 +93,17 @@ ipcMain.handle('registerUser', async (event, user) => {
   if (!nome || !email || !senha)
     return { success: false, message: 'Preencha todos os campos.' };
 
+  // Check if any user already exists (single user app)
+  const existingUsers = db.prepare('SELECT COUNT(*) as count FROM usuarios').get();
+  if (existingUsers.count > 0)
+    return { success: false, message: 'Este aplicativo já possui um usuário registrado. Apenas um usuário é permitido.' };
+
   const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   if (!emailRegex.test(email))
     return { success: false, message: 'E-mail inválido.' };
 
   if (senha.length < 8 || !/[A-Za-z]/.test(senha) || !/[0-9]/.test(senha))
     return { success: false, message: 'A senha deve ter ao menos 8 caracteres, com letras e números.' };
-
-  const existingUser = db.prepare('SELECT * FROM usuarios WHERE email = ?').get(email);
-  if (existingUser)
-    return { success: false, message: 'E-mail já cadastrado.' };
 
   const hash = await bcrypt.hash(senha, 10);
 
@@ -131,6 +132,12 @@ ipcMain.handle('loginUser', async (event, credentials) => {
     userId: user.email, 
     nome: user.nome 
   };
+});
+
+// ====================== CHECK USER EXISTS ======================
+ipcMain.handle('checkUserExists', () => {
+  const existingUsers = db.prepare('SELECT COUNT(*) as count FROM usuarios').get();
+  return { userExists: existingUsers.count > 0 };
 });
 
 

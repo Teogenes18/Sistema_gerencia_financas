@@ -88,3 +88,39 @@ button:hover {
   margin-bottom: 16px;
   text-align: center;
 }
+
+.error {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+/* Form field validation styles */
+input:invalid {
+  border-color: #e74c3c;
+}
+
+input:valid {
+  border-color: #27ae60;
+}
+
+/* Button disabled state */
+button:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+button:disabled:hover {
+  background-color: #95a5a6;
+}
+
+/* Link styles */
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
