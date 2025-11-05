@@ -93,7 +93,6 @@ ipcMain.handle('registerUser', async (event, user) => {
   if (!nome || !email || !senha)
     return { success: false, message: 'Preencha todos os campos.' };
 
-  // Check if any user already exists (single user app)
   const existingUsers = db.prepare('SELECT COUNT(*) as count FROM usuarios').get();
   if (existingUsers.count > 0)
     return { success: false, message: 'Este aplicativo já possui um usuário registrado. Apenas um usuário é permitido.' };
@@ -111,7 +110,6 @@ ipcMain.handle('registerUser', async (event, user) => {
   return { success: true, message: 'Usuário cadastrado com sucesso.' };
 });
 
-// ====================== LOGIN ======================
 ipcMain.handle('loginUser', async (event, credentials) => {
   const { email, senha } = credentials;
 
@@ -134,7 +132,6 @@ ipcMain.handle('loginUser', async (event, credentials) => {
   };
 });
 
-// ====================== CHECK USER EXISTS ======================
 ipcMain.handle('checkUserExists', () => {
   const existingUsers = db.prepare('SELECT COUNT(*) as count FROM usuarios').get();
   return { userExists: existingUsers.count > 0 };
