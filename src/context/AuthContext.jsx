@@ -12,7 +12,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [userExists, setUserExists] = useState(true);
+  // const [userExists, setUserExists] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,8 +21,9 @@ export function AuthProvider({ children }) {
 
   const checkUserExists = async () => {
     try {
-      const result = await window.api.checkUserExists();
-      setUserExists(result.userExists);
+      // const result = await window.api.checkUserExists();
+      // setUserExists(result.userExists);
+      setLoading(false);
     } catch (error) {
       console.error('Erro ao verificar usuário existente:', error);
       setUserExists(true);
@@ -50,9 +51,6 @@ export function AuthProvider({ children }) {
   const register = async (userData) => {
     try {
       const result = await window.api.registerUser(userData);
-      if (result.success) {
-        setUserExists(true);
-      }
       return result;
     } catch (error) {
       console.error('Erro ao registrar:', error);
@@ -66,7 +64,6 @@ export function AuthProvider({ children }) {
 
   const value = {
     user,
-    userExists,
     loading,
     login,
     register,

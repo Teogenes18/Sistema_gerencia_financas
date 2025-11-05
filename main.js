@@ -12,7 +12,9 @@ db.exec(`
     tipo TEXT NOT NULL,
     valor REAL NOT NULL,
     data TEXT NOT NULL,
-    descricao TEXT
+    descricao TEXT,
+    usuario_email TEXT NOT NULL,
+    FOREIGN KEY (usuario_email) REFERENCES usuarios(email)
   );
   
   CREATE TABLE IF NOT EXISTS usuarios (
@@ -27,6 +29,47 @@ db.exec(`
     saldo REAL NOT NULL
   );
 `);
+
+// Adicione após a criação das tabelas
+try {
+  // Verifica se a coluna usuario_email existe
+  const tableInfo = db.prepare("PRAGMA table_info(transacoes)").all();
+  const hasUserEmail = tableInfo.some(col => col.name === 'usuario_email');
+  
+  if (!hasUserEmail) {
+    // Backup das transações existentes
+    const transacoes = db.prepare('SELECT * FROM transacoes').all();
+    
+    // Recria a tabela com a nova coluna
+    db.exec(`
+      DROP TABLE transacoes;
+      CREATE TABLE transacoes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tipo TEXT NOT NULL,
+        valor REAL NOT NULL,
+        data TEXT NOT NULL,
+        descricao TEXT,
+        usuario_email TEXT NOT NULL,
+        FOREIGN KEY (usuario_email) REFERENCES usuarios(email)
+      );
+    `);
+    
+    // Se houver um usuário, associa as transações a ele
+    const usuario = db.prepare('SELECT email FROM usuarios LIMIT 1').get();
+    if (usuario && transacoes.length > 0) {
+      const stmt = db.prepare(`
+        INSERT INTO transacoes (tipo, valor, data, descricao, usuario_email)
+        VALUES (?, ?, ?, ?, ?)
+      `);
+      
+      transacoes.forEach(tx => {
+        stmt.run(tx.tipo, tx.valor, tx.data, tx.descricao, usuario.email);
+      });
+    }
+  }
+} catch (error) {
+  console.error('Erro na migração:', error);
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -48,16 +91,16 @@ function createWindow() {
 }
 
 ipcMain.handle('addTransaction', (event, tx) => {
-  db.prepare('INSERT INTO transacoes (tipo, valor, data, descricao) VALUES (?, ?, ?, ?)')
-    .run(tx.tipo, tx.valor, tx.data, tx.descricao);
+  db.prepare('INSERT INTO transacoes (tipo, valor, data, descricao,usuario_email) VALUES (?, ?, ?, ?,?)')
+    .run(tx.tipo, tx.valor, tx.data, tx.descricao,tx.userEmail);
 });
 
-ipcMain.handle('listTransactions', () => {
-  return db.prepare('SELECT * FROM transacoes ORDER BY data DESC, id DESC').all();
+ipcMain.handle('listTransactions', (event,userEmail) => {
+  return db.prepare('SELECT * FROM transacoes where usuario_email = ? ORDER BY data DESC, id DESC').all(userEmail);
 });
 
-ipcMain.handle('delete-transaction', (event, id) => {
-  db.prepare('DELETE FROM transacoes WHERE id = ?').run(id);
+ipcMain.handle('delete-transaction', (event, {id,userEmail}) => {
+  db.prepare('DELETE FROM transacoes WHERE id = ? and usuario_email = ?').run(id,userEmail);
 });
 
 ipcMain.handle('addBank', (event, bank) => {
@@ -93,9 +136,14 @@ ipcMain.handle('registerUser', async (event, user) => {
   if (!nome || !email || !senha)
     return { success: false, message: 'Preencha todos os campos.' };
 
-  const existingUsers = db.prepare('SELECT COUNT(*) as count FROM usuarios').get();
-  if (existingUsers.count > 0)
-    return { success: false, message: 'Este aplicativo já possui um usuário registrado. Apenas um usuário é permitido.' };
+  const existingUser = db.prepare('SELECT email FROM usuarios WHERE email = ?').get(email);
+  if (existingUser)
+    return { success: false, message: 'Este e-mail já está cadastrado.' };
+
+  // Check if any user already exists (single user app)
+  // const existingUsers = db.prepare('SELECT COUNT(*) as count FROM usuarios').get();
+  // if (existingUsers.count > 0)
+  //   return { success: false, message: 'Este aplicativo já possui um usuário registrado. Apenas um usuário é permitido.' };
 
   const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   if (!emailRegex.test(email))

@@ -19,7 +19,7 @@ export default function Home() {
 
   const carregar = async () => {
     try {
-      const data = await window.api.listTransactions();
+      const data = await window.api.listTransactions(user.id);
       setTransacoes(data);
     } catch (err) {
       console.error(err);
@@ -33,7 +33,8 @@ export default function Home() {
         tipo: data.tipo,
         valor: parseFloat(data.valor),
         data: data.data,
-        descricao: data.descricao.trim()
+        descricao: data.descricao.trim(),
+        userEmail: user.id
       });
 
       reset();
@@ -49,7 +50,7 @@ export default function Home() {
     if (!confirmar) return;
 
     try {
-      await window.api.deleteTransaction(id);
+      await window.api.deleteTransaction(id,user.id);
       carregar();
     } catch (err) {
       console.error('Erro ao excluir transação:', err);

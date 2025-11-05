@@ -17,15 +17,13 @@ function PublicRoute({ children }) {
 }
 
 function RegistrationRoute({ children }) {
-  const { user, userExists } = useAuth();
+  const { user } = useAuth();
   
   if (user) {
     return <Navigate to="/home" replace />;
   }
   
-  if (userExists) {
-    return <Navigate to="/login" replace />;
-  }
+ 
   
   return children;
 }
