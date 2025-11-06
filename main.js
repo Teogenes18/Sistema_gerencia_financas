@@ -30,17 +30,13 @@ db.exec(`
   );
 `);
 
-// Adicione após a criação das tabelas
 try {
-  // Verifica se a coluna usuario_email existe
   const tableInfo = db.prepare("PRAGMA table_info(transacoes)").all();
   const hasUserEmail = tableInfo.some(col => col.name === 'usuario_email');
   
   if (!hasUserEmail) {
-    // Backup das transações existentes
     const transacoes = db.prepare('SELECT * FROM transacoes').all();
     
-    // Recria a tabela com a nova coluna
     db.exec(`
       DROP TABLE transacoes;
       CREATE TABLE transacoes (
@@ -54,7 +50,6 @@ try {
       );
     `);
     
-    // Se houver um usuário, associa as transações a ele
     const usuario = db.prepare('SELECT email FROM usuarios LIMIT 1').get();
     if (usuario && transacoes.length > 0) {
       const stmt = db.prepare(`
@@ -75,6 +70,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 700,
+    icon: path.join(__dirname, 'assets', 'icon.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -139,11 +135,6 @@ ipcMain.handle('registerUser', async (event, user) => {
   const existingUser = db.prepare('SELECT email FROM usuarios WHERE email = ?').get(email);
   if (existingUser)
     return { success: false, message: 'Este e-mail já está cadastrado.' };
-
-  // Check if any user already exists (single user app)
-  // const existingUsers = db.prepare('SELECT COUNT(*) as count FROM usuarios').get();
-  // if (existingUsers.count > 0)
-  //   return { success: false, message: 'Este aplicativo já possui um usuário registrado. Apenas um usuário é permitido.' };
 
   const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   if (!emailRegex.test(email))

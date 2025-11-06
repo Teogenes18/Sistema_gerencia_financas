@@ -96,7 +96,6 @@ button:hover {
   margin-bottom: 8px;
 }
 
-/* Form field validation styles */
 input:invalid {
   border-color: #e74c3c;
 }
@@ -105,7 +104,6 @@ input:valid {
   border-color: #27ae60;
 }
 
-/* Button disabled state */
 button:disabled {
   background-color: #95a5a6;
   cursor: not-allowed;
@@ -115,7 +113,6 @@ button:disabled:hover {
   background-color: #95a5a6;
 }
 
-/* Link styles */
 a {
   color: #007bff;
   text-decoration: none;
@@ -123,4 +120,65 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+/* Novos estilos adicionados */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  max-height: 50px;
+  max-width: 200px;
+  object-fit: contain;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #c0392b;
+}
+
+.logout-icon {
+  margin-right: 5px;
+}
+
+.bank-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.bank-btn:hover {
+  background-color: #45a049;
+}
+
+.transaction-form {
+  margin-bottom: 30px;
 }

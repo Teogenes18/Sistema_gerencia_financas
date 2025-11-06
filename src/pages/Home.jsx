@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { FiLogOut, FiTrash2 } from 'react-icons/fi'; 
 import { useAuth } from '../context/AuthContext';
+import logo from '../../assets/logo.png'; 
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -50,7 +51,7 @@ export default function Home() {
     if (!confirmar) return;
 
     try {
-      await window.api.deleteTransaction(id,user.id);
+      await window.api.deleteTransaction(id, user.id);
       carregar();
     } catch (err) {
       console.error('Erro ao excluir transação:', err);
@@ -72,47 +73,33 @@ export default function Home() {
 
   return (
     <div className="container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Gerenciador Financeiro</h1>
+      <header className="header">
+        <div className="logo-container">
+          <img 
+            src={logo} 
+            alt="Gerenciador de Finanças" 
+            className="logo"
+          />
+        </div>
         <button
           onClick={handleLogout}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            backgroundColor: '#e74c3c', 
-            color: 'white',
-            border: 'none',
-            padding: '8px 12px',
-            cursor: 'pointer',
-            borderRadius: '4px',
-            fontWeight: 'bold'
-          }}
+          className="logout-btn"
         >
-          <FiLogOut style={{ marginRight: '5px' }} />
+          <FiLogOut className="logout-icon" />
           Logout
         </button>
-      </div>
+      </header>
 
       <h2>Bem-vindo, {user?.nome}!</h2>
 
       <button
         onClick={goToBank}
-        style={{
-          backgroundColor: '#4CAF50',
-          color: 'white',
-          border: 'none',
-          padding: '10px 20px',
-          cursor: 'pointer',
-          borderRadius: '4px',
-          fontWeight: 'bold',
-          marginBottom: '20px',
-          fontSize: '16px'
-        }}
+        className="bank-btn"
       >
         + Cadastrar Banco
       </button>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="transaction-form">
         <h2>Nova Transação</h2>
 
         <label>Tipo</label>
