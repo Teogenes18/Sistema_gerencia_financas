@@ -9,5 +9,6 @@ dist/
 release/
 
 financas.db
+finance.sqlite
 
 .parcel-cache

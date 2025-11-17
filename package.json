@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
-    "better-sqlite3": "^12.4.1",
+    "sequelize": "^6.37.3",
+    "sqlite3": "^5.1.7",
     "react-hook-form": "^7.66.0",
     "react-router-dom": "^6.30.1"
   },

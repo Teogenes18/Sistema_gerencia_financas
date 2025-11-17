@@ -182,3 +182,8 @@ a:hover {
 .transaction-form {
   margin-bottom: 30px;
 }
+
+.extrato > p {
+  text-align: right;
+}
+

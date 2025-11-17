@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { FiLogOut, FiTrash2 } from 'react-icons/fi'; 
+import { FiLogOut, FiTrash2 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
-import logo from '../../assets/logo.png'; 
+import logo from '../../assets/logo.png';
 
 export default function Home() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [transacoes, setTransacoes] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
     defaultValues: {
       tipo: 'receita',
@@ -18,23 +18,33 @@ export default function Home() {
     }
   });
 
+  const balance = useMemo(() => {
+    return transactions.reduce((total, tx) => {
+      const amount = Number(tx.amount) || 0;
+      const signal = tx.transactionType === 'receita' ? 1 : -1;
+      return total + amount * signal;
+    }, 0);
+  }, [transactions]);
+
+  const balanceClass = balance >= 0 ? 'valor-receita' : 'valor-despesa';
+
   const carregar = async () => {
     try {
       const data = await window.api.listTransactions(user.id);
-      setTransacoes(data);
+      setTransactions(data);
     } catch (err) {
       console.error(err);
-      setTransacoes([]);
+      setTransactions([]);
     }
   };
 
   const onSubmit = async (data) => {
     try {
       await window.api.addTransaction({
-        tipo: data.tipo,
-        valor: parseFloat(data.valor),
-        data: data.data,
-        descricao: data.descricao.trim(),
+        transactionType: data.tipo,
+        amount: parseFloat(data.valor),
+        occurredOn: data.data,
+        description: data.descricao.trim(),
         userEmail: user.id
       });
 
@@ -75,9 +85,9 @@ export default function Home() {
     <div className="container">
       <header className="header">
         <div className="logo-container">
-          <img 
-            src={logo} 
-            alt="Gerenciador de Finanças" 
+          <img
+            src={logo}
+            alt="Gerenciador de Finanças"
             className="logo"
           />
         </div>
@@ -126,7 +136,7 @@ export default function Home() {
               message: 'O valor deve ser maior que zero'
             },
             validate: {
-              isPositive: (value) => 
+              isPositive: (value) =>
                 parseFloat(value) > 0 || 'O valor deve ser maior que zero'
             }
           })}
@@ -163,17 +173,17 @@ export default function Home() {
 
       <div className="extrato">
         <h2>Extrato</h2>
-        {transacoes.length === 0 && <p>Nenhuma transação cadastrada.</p>}
+        {transactions.length === 0 && <p>Nenhuma transação cadastrada.</p>}
 
-        {transacoes.map(t => {
-          const valorFormatado = Number(t.valor).toFixed(2).replace('.', ',');
-          const sinal = t.tipo === 'receita' ? '+ R$ ' : '- R$ ';
-          const [ano, mes, dia] = t.data.split('-');
+        {transactions.map(t => {
+          const valorFormatado = Number(t.amount).toFixed(2).replace('.', ',');
+          const sinal = t.transactionType === 'receita' ? '+ R$ ' : '- R$ ';
+          const [ano = '', mes = '', dia = ''] = (t.occurredOn || '').split('-');
 
           return (
             <div key={t.id} className="item">
-              <div>{`${dia}/${mes}/${ano} - ${t.descricao}`}</div>
-              <div className={t.tipo === 'receita' ? 'valor-receita' : 'valor-despesa'}>
+              <div>{`${dia}/${mes}/${ano} - ${t.description || 'Sem descrição'}`}</div>
+              <div className={t.transactionType === 'receita' ? 'valor-receita' : 'valor-despesa'}>
                 {sinal + valorFormatado}
 
                 <button
@@ -187,6 +197,10 @@ export default function Home() {
             </div>
           );
         })}
+
+        <hr />
+
+        <p>Soma: <span className={balanceClass}>R$ {balance.toFixed(2)}</span></p>
       </div>
     </div>
   );
