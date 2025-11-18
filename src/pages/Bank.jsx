@@ -1,17 +1,27 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  Paper,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material';
+import { ArrowBack, Savings } from '@mui/icons-material';
 
 export default function Bank() {
   const navigate = useNavigate();
   const [apiMessage, setApiMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
+  const [messageSeverity, setMessageSeverity] = useState('success');
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm();
 
   const onSubmit = async (data) => {
     try {
       setApiMessage('');
-      setMessageType('');
 
       const result = await window.api.addBank({
         nome: data.nome.trim(),
@@ -19,21 +29,21 @@ export default function Bank() {
       });
 
       if (result.success) {
-        setApiMessage('✅ Banco cadastrado com sucesso!');
-        setMessageType('sucesso');
+        setApiMessage('Banco cadastrado com sucesso!');
+        setMessageSeverity('success');
         reset();
-        
+
         setTimeout(() => {
           navigate('/home');
         }, 1500);
       } else {
-        setApiMessage('❌ ' + result.message);
-        setMessageType('erro');
+        setApiMessage(result.message || 'Não foi possível cadastrar o banco.');
+        setMessageSeverity('error');
       }
     } catch (error) {
       console.error(error);
-      setApiMessage('❌ Erro ao cadastrar banco. Tente novamente.');
-      setMessageType('erro');
+      setMessageSeverity('error');
+      setApiMessage('Erro ao cadastrar banco. Tente novamente.');
     }
   };
 
@@ -42,85 +52,90 @@ export default function Bank() {
   };
 
   return (
-    <div className="container">
-      <h1>Gerenciador Financeiro</h1>
-      <h2>Cadastrar Banco</h2>
+    <Container maxWidth="sm" sx={{ py: 8 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Stack spacing={3}>
+          <Box>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Savings color="primary" />
+              <Typography variant="h5" fontWeight={600}>
+                Gerenciador Financeiro
+              </Typography>
+            </Stack>
+            <Typography variant="body2" color="text.secondary">
+              Cadastre um novo banco para acompanhar seus saldos iniciais.
+            </Typography>
+          </Box>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <label>Nome do Banco</label>
-        <input
-          type="text"
-          placeholder="Ex: Banco do Brasil, Nubank, Caixa..."
-          {...register('nome', {
-            required: 'O nome do banco é obrigatório',
-            minLength: {
-              value: 2,
-              message: 'O nome deve ter pelo menos 2 caracteres'
-            },
-            validate: {
-              notEmpty: (value) => 
-                value.trim().length > 0 || 'O nome não pode estar vazio'
-            }
-          })}
-        />
-        {errors.nome && <p className="error">{errors.nome.message}</p>}
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+            <TextField
+              label="Nome do Banco"
+              placeholder="Ex: Banco do Brasil, Nubank, Caixa..."
+              fullWidth
+              margin="normal"
+              {...register('nome', {
+                required: 'O nome do banco é obrigatório',
+                minLength: {
+                  value: 2,
+                  message: 'O nome deve ter pelo menos 2 caracteres'
+                },
+                validate: {
+                  notEmpty: (value) =>
+                    value.trim().length > 0 || 'O nome não pode estar vazio'
+                }
+              })}
+              error={Boolean(errors.nome)}
+              helperText={errors.nome?.message}
+            />
 
-        <label>Saldo Inicial</label>
-        <input
-          type="number"
-          step="0.01"
-          min="0"
-          placeholder="Ex: 1500.00"
-          {...register('saldo', {
-            required: 'O saldo inicial é obrigatório',
-            min: {
-              value: 0,
-              message: 'O saldo não pode ser negativo'
-            },
-            validate: {
-              isNumber: (value) => 
-                !isNaN(parseFloat(value)) || 'O saldo deve ser um número válido'
-            }
-          })}
-        />
-        {errors.saldo && <p className="error">{errors.saldo.message}</p>}
+            <TextField
+              label="Saldo Inicial"
+              type="number"
+              fullWidth
+              margin="normal"
+              placeholder="Ex: 1500.00"
+              inputProps={{ step: '0.01', min: '0' }}
+              {...register('saldo', {
+                required: 'O saldo inicial é obrigatório',
+                min: {
+                  value: 0,
+                  message: 'O saldo não pode ser negativo'
+                },
+                validate: {
+                  isNumber: (value) =>
+                    !isNaN(parseFloat(value)) || 'O saldo deve ser um número válido'
+                }
+              })}
+              error={Boolean(errors.saldo)}
+              helperText={errors.saldo?.message}
+            />
 
-        <button type="submit" disabled={isSubmitting} style={{ backgroundColor: '#2196F3' }}>
-          {isSubmitting ? 'Salvando...' : 'Salvar Banco'}
-        </button>
-      </form>
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{ mt: 2 }}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Salvando...' : 'Salvar Banco'}
+            </Button>
+          </Box>
 
-      {apiMessage && (
-        <p 
-          className="mensagem"
-          style={{ 
-            marginTop: '15px',
-            padding: '10px',
-            borderRadius: '4px',
-            backgroundColor: messageType === 'sucesso' ? '#d4edda' : '#f8d7da',
-            color: messageType === 'sucesso' ? '#155724' : '#721c24',
-            border: `1px solid ${messageType === 'sucesso' ? '#c3e6cb' : '#f5c6cb'}`
-          }}
-        >
-          {apiMessage}
-        </p>
-      )}
+          {apiMessage && (
+            <Alert severity={messageSeverity} variant="outlined">
+              {apiMessage}
+            </Alert>
+          )}
 
-      <button
-        onClick={goBack}
-        style={{
-          backgroundColor: '#6c757d',
-          color: '#fff',
-          border: 'none',
-          padding: '10px 20px',
-          borderRadius: '4px',
-          cursor: 'pointer',
-          marginTop: '20px',
-          fontWeight: 'bold'
-        }}
-      >
-        Voltar
-      </button>
-    </div>
+          <Button
+            variant="text"
+            startIcon={<ArrowBack />}
+            onClick={goBack}
+          >
+            Voltar para o dashboard
+          </Button>
+        </Stack>
+      </Paper>
+    </Container>
   );
 }

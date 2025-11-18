@@ -1,7 +1,29 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { FiLogOut, FiTrash2 } from 'react-icons/fi';
+import {
+  AccountBalance,
+  DeleteOutline,
+  Logout
+} from '@mui/icons-material';
+import {
+  Avatar,
+  Box,
+  Button,
+  Chip,
+  Container,
+  Divider,
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  MenuItem,
+  Paper,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import logo from '../../assets/logo.png';
 
@@ -18,6 +40,11 @@ export default function Home() {
     }
   });
 
+  const currencyFormatter = useMemo(() => new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  }), []);
+
   const balance = useMemo(() => {
     return transactions.reduce((total, tx) => {
       const amount = Number(tx.amount) || 0;
@@ -26,17 +53,16 @@ export default function Home() {
     }, 0);
   }, [transactions]);
 
-  const balanceClass = balance >= 0 ? 'valor-receita' : 'valor-despesa';
-
-  const carregar = async () => {
+  const loadTransactions = useCallback(async () => {
+    if (!user?.id) return;
     try {
       const data = await window.api.listTransactions(user.id);
-      setTransactions(data);
+      setTransactions(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
       setTransactions([]);
     }
-  };
+  }, [user?.id]);
 
   const onSubmit = async (data) => {
     try {
@@ -49,20 +75,20 @@ export default function Home() {
       });
 
       reset();
-      carregar();
+      loadTransactions();
     } catch (error) {
       console.error('Erro ao salvar transação:', error);
       alert('Erro ao salvar transação. Tente novamente.');
     }
   };
 
-  const excluir = async (id) => {
-    const confirmar = confirm('Tem certeza que deseja excluir esta transação?');
-    if (!confirmar) return;
+  const handleDelete = async (id) => {
+    const confirmed = confirm('Tem certeza que deseja excluir esta transação?');
+    if (!confirmed) return;
 
     try {
       await window.api.deleteTransaction(id, user.id);
-      carregar();
+      loadTransactions();
     } catch (err) {
       console.error('Erro ao excluir transação:', err);
     }
@@ -78,130 +104,203 @@ export default function Home() {
   };
 
   useEffect(() => {
-    carregar();
-  }, []);
+    loadTransactions();
+  }, [loadTransactions]);
+
+  const balanceColor = balance >= 0 ? 'success.main' : 'error.main';
 
   return (
-    <div className="container">
-      <header className="header">
-        <div className="logo-container">
-          <img
-            src={logo}
-            alt="Gerenciador de Finanças"
-            className="logo"
-          />
-        </div>
-        <button
-          onClick={handleLogout}
-          className="logout-btn"
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center" justifyContent="space-between">
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Avatar src={logo} alt="Gerenciador de Finanças" sx={{ width: 56, height: 56 }} />
+            <Box>
+              <Typography variant="h6">Gerenciador de Finanças</Typography>
+              <Typography variant="body2" color="text.secondary">
+                Bem-vindo, {user?.nome || 'usuário'}
+              </Typography>
+            </Box>
+          </Stack>
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<Logout />}
+            onClick={handleLogout}
+          >
+            Sair
+          </Button>
+        </Stack>
+      </Paper>
+
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} mb={3}>
+        <Button
+          variant="contained"
+          startIcon={<AccountBalance />}
+          onClick={goToBank}
+          sx={{ flexGrow: 1 }}
         >
-          <FiLogOut className="logout-icon" />
-          Logout
-        </button>
-      </header>
-
-      <h2>Bem-vindo, {user?.nome}!</h2>
-
-      <button
-        onClick={goToBank}
-        className="bank-btn"
-      >
-        + Cadastrar Banco
-      </button>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="transaction-form">
-        <h2>Nova Transação</h2>
-
-        <label>Tipo</label>
-        <select
-          {...register('tipo', {
-            required: 'Selecione o tipo de transação'
-          })}
+          Cadastrar Banco
+        </Button>
+        <Button
+          variant="contained"
         >
-          <option value="receita">Receita</option>
-          <option value="despesa">Despesa</option>
-        </select>
-        {errors.tipo && <p className="error">{errors.tipo.message}</p>}
+          Adicionar Transação
+        </Button>
+        <Paper elevation={1} sx={{ px: 3, py: 2 }}>
+          <Typography variant="subtitle2" color="text.secondary">
+            Saldo Atual
+          </Typography>
+          <Typography variant="h4" sx={{ color: balanceColor, fontWeight: 600 }}>
+            {currencyFormatter.format(balance)}
+          </Typography>
+        </Paper>
+      </Stack>
 
-        <label>Valor</label>
-        <input
-          type="number"
-          step="0.01"
-          min="0.01"
-          placeholder="0.00"
-          {...register('valor', {
-            required: 'Por favor, preencha o valor',
-            min: {
-              value: 0.01,
-              message: 'O valor deve ser maior que zero'
-            },
-            validate: {
-              isPositive: (value) =>
-                parseFloat(value) > 0 || 'O valor deve ser maior que zero'
-            }
-          })}
-        />
-        {errors.valor && <p className="error">{errors.valor.message}</p>}
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={4}>
+          <Paper elevation={2} sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Nova Transação
+            </Typography>
+            <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+              <TextField
+                select
+                label="Tipo"
+                fullWidth
+                margin="normal"
+                defaultValue="receita"
+                {...register('tipo', {
+                  required: 'Selecione o tipo de transação'
+                })}
+                error={Boolean(errors.tipo)}
+                helperText={errors.tipo?.message}
+              >
+                <MenuItem value="receita">Receita</MenuItem>
+                <MenuItem value="despesa">Despesa</MenuItem>
+              </TextField>
 
-        <label>Data</label>
-        <input
-          type="date"
-          {...register('data', {
-            required: 'Por favor, selecione uma data'
-          })}
-        />
-        {errors.data && <p className="error">{errors.data.message}</p>}
+              <TextField
+                label="Valor"
+                type="number"
+                fullWidth
+                margin="normal"
+                inputProps={{ step: '0.01', min: '0.01' }}
+                {...register('valor', {
+                  required: 'Por favor, preencha o valor',
+                  min: {
+                    value: 0.01,
+                    message: 'O valor deve ser maior que zero'
+                  },
+                  validate: {
+                    isPositive: (value) =>
+                      parseFloat(value) > 0 || 'O valor deve ser maior que zero'
+                  }
+                })}
+                error={Boolean(errors.valor)}
+                helperText={errors.valor?.message}
+              />
 
-        <label>Descrição</label>
-        <input
-          type="text"
-          placeholder="Descrição da transação"
-          {...register('descricao', {
-            required: 'Por favor, preencha a descrição',
-            minLength: {
-              value: 3,
-              message: 'A descrição deve ter pelo menos 3 caracteres'
-            }
-          })}
-        />
-        {errors.descricao && <p className="error">{errors.descricao.message}</p>}
+              <TextField
+                label="Data"
+                type="date"
+                fullWidth
+                margin="normal"
+                InputLabelProps={{ shrink: true }}
+                {...register('data', {
+                  required: 'Por favor, selecione uma data'
+                })}
+                error={Boolean(errors.data)}
+                helperText={errors.data?.message}
+              />
 
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Salvando...' : 'Salvar Transação'}
-        </button>
-      </form>
+              <TextField
+                label="Descrição"
+                fullWidth
+                margin="normal"
+                placeholder="Descrição da transação"
+                {...register('descricao', {
+                  required: 'Por favor, preencha a descrição',
+                  minLength: {
+                    value: 3,
+                    message: 'A descrição deve ter pelo menos 3 caracteres'
+                  }
+                })}
+                error={Boolean(errors.descricao)}
+                helperText={errors.descricao?.message}
+              />
 
-      <div className="extrato">
-        <h2>Extrato</h2>
-        {transactions.length === 0 && <p>Nenhuma transação cadastrada.</p>}
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                sx={{ mt: 2 }}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Salvando...' : 'Salvar Transação'}
+              </Button>
+            </Box>
+          </Paper>
+        </Grid>
 
-        {transactions.map(t => {
-          const valorFormatado = Number(t.amount).toFixed(2).replace('.', ',');
-          const sinal = t.transactionType === 'receita' ? '+ R$ ' : '- R$ ';
-          const [ano = '', mes = '', dia = ''] = (t.occurredOn || '').split('-');
+        <Grid item xs={12} md={8}>
+          <Paper elevation={2} sx={{ p: 3, minHeight: 400 }}>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
+              <Typography variant="h6">Extrato</Typography>
+              <Chip label={`${transactions.length} item(s)`} color="primary" variant="outlined" />
+            </Stack>
 
-          return (
-            <div key={t.id} className="item">
-              <div>{`${dia}/${mes}/${ano} - ${t.description || 'Sem descrição'}`}</div>
-              <div className={t.transactionType === 'receita' ? 'valor-receita' : 'valor-despesa'}>
-                {sinal + valorFormatado}
+            {transactions.length === 0 ? (
+              <Typography color="text.secondary">
+                Nenhuma transação cadastrada.
+              </Typography>
+            ) : (
+              <List disablePadding>
+                {transactions.map((t, index) => {
+                  const amount = Number(t.amount) || 0;
+                  const formattedAmount = currencyFormatter.format(Math.abs(amount));
+                  const prefix = t.transactionType === 'receita' ? '+' : '-';
+                  const amountColor = t.transactionType === 'receita' ? 'success.main' : 'error.main';
+                  const [ano = '', mes = '', dia = ''] = (t.occurredOn || '').split('-');
+                  const description = t.description?.trim() || 'Sem descrição';
 
-                <button
-                  className="btn-excluir"
-                  onClick={() => excluir(t.id)}
-                  title="Excluir transação"
-                >
-                  <FiTrash2 />
-                </button>
-              </div>
-            </div>
-          );
-        })}
+                  return (
+                    <Box key={t.id || index}>
+                      {index !== 0 && <Divider sx={{ my: 1 }} />}
+                      <ListItem
+                        disableGutters
+                        secondaryAction={
+                          <IconButton edge="end" color="error" onClick={() => handleDelete(t.id)}>
+                            <DeleteOutline />
+                          </IconButton>
+                        }
+                      >
+                        <ListItemText
+                          primary={`${dia}/${mes}/${ano} - ${description}`}
+                          secondary={`Tipo: ${t.transactionType === 'receita' ? 'Receita' : 'Despesa'}`}
+                        />
+                        <Typography variant="subtitle1" sx={{ color: amountColor, fontWeight: 600, mr: 4 }}>
+                          {`${prefix} ${formattedAmount}`}
+                        </Typography>
+                      </ListItem>
+                    </Box>
+                  );
+                })}
+              </List>
+            )}
 
-        <hr />
-
-        <p>Soma: <span className={balanceClass}>R$ {balance.toFixed(2)}</span></p>
-      </div>
-    </div>
+            <Divider sx={{ my: 2 }} />
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Typography variant="subtitle1">Soma</Typography>
+              <Chip
+                label={currencyFormatter.format(balance)}
+                color={balance >= 0 ? 'success' : 'error'}
+                sx={{ fontWeight: 600 }}
+              />
+            </Stack>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
