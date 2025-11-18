@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import {
   AccountBalance,
+  AddCircleOutline,
   DeleteOutline,
   Logout
 } from '@mui/icons-material';
@@ -12,8 +13,11 @@ import {
   Button,
   Chip,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
-  Grid,
   IconButton,
   List,
   ListItem,
@@ -31,6 +35,7 @@ export default function Home() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
     defaultValues: {
       tipo: 'receita',
@@ -75,6 +80,7 @@ export default function Home() {
       });
 
       reset();
+      setIsModalOpen(false);
       loadTransactions();
     } catch (error) {
       console.error('Erro ao salvar transação:', error);
@@ -101,6 +107,12 @@ export default function Home() {
 
   const goToBank = () => {
     navigate('/bank');
+  };
+
+  const openTransactionModal = () => setIsModalOpen(true);
+  const closeTransactionModal = () => {
+    setIsModalOpen(false);
+    reset();
   };
 
   useEffect(() => {
@@ -144,6 +156,15 @@ export default function Home() {
         </Button>
         <Button
           variant="contained"
+          color="secondary"
+          startIcon={<AddCircleOutline fontSize="large" />}
+          size="large"
+          sx={{
+            flexGrow: { xs: 1, md: 1.4 },
+            py: 1.5,
+            fontSize: '1rem'
+          }}
+          onClick={openTransactionModal}
         >
           Adicionar Transação
         </Button>
@@ -157,150 +178,151 @@ export default function Home() {
         </Paper>
       </Stack>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
-          <Paper elevation={2} sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Nova Transação
-            </Typography>
-            <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-              <TextField
-                select
-                label="Tipo"
-                fullWidth
-                margin="normal"
-                defaultValue="receita"
-                {...register('tipo', {
-                  required: 'Selecione o tipo de transação'
-                })}
-                error={Boolean(errors.tipo)}
-                helperText={errors.tipo?.message}
-              >
-                <MenuItem value="receita">Receita</MenuItem>
-                <MenuItem value="despesa">Despesa</MenuItem>
-              </TextField>
+      <Paper
+        elevation={2}
+        sx={{
+          p: 3,
+          minHeight: 480,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'visible'
+        }}
+      >
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
+          <Typography variant="h6">Extrato</Typography>
+          <Chip label={`${transactions.length} item(s)`} color="primary" variant="outlined" />
+        </Stack>
 
-              <TextField
-                label="Valor"
-                type="number"
-                fullWidth
-                margin="normal"
-                inputProps={{ step: '0.01', min: '0.01' }}
-                {...register('valor', {
-                  required: 'Por favor, preencha o valor',
-                  min: {
-                    value: 0.01,
-                    message: 'O valor deve ser maior que zero'
-                  },
-                  validate: {
-                    isPositive: (value) =>
-                      parseFloat(value) > 0 || 'O valor deve ser maior que zero'
-                  }
-                })}
-                error={Boolean(errors.valor)}
-                helperText={errors.valor?.message}
-              />
+        {transactions.length === 0 ? (
+          <Typography color="text.secondary">
+            Nenhuma transação cadastrada.
+          </Typography>
+        ) : (
+          <List sx={{ flexGrow: 1, overflowY: 'auto' }} disablePadding>
+            {transactions.map((t, index) => {
+              const amount = Number(t.amount) || 0;
+              const formattedAmount = currencyFormatter.format(Math.abs(amount));
+              const prefix = t.transactionType === 'receita' ? '+' : '-';
+              const amountColor = t.transactionType === 'receita' ? 'success.main' : 'error.main';
+              const [ano = '', mes = '', dia = ''] = (t.occurredOn || '').split('-');
+              const description = t.description?.trim() || 'Sem descrição';
 
-              <TextField
-                label="Data"
-                type="date"
-                fullWidth
-                margin="normal"
-                InputLabelProps={{ shrink: true }}
-                {...register('data', {
-                  required: 'Por favor, selecione uma data'
-                })}
-                error={Boolean(errors.data)}
-                helperText={errors.data?.message}
-              />
+              return (
+                <Box key={t.id || index}>
+                  {index !== 0 && <Divider sx={{ my: 1 }} />}
+                  <ListItem
+                    disableGutters
+                    secondaryAction={
+                      <IconButton edge="end" color="error" onClick={() => handleDelete(t.id)}>
+                        <DeleteOutline />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemText
+                      primary={`${dia}/${mes}/${ano} - ${description}`}
+                      secondary={`Tipo: ${t.transactionType === 'receita' ? 'Receita' : 'Despesa'}`}
+                    />
+                    <Typography variant="subtitle1" sx={{ color: amountColor, fontWeight: 600, mr: 4 }}>
+                      {`${prefix} ${formattedAmount}`}
+                    </Typography>
+                  </ListItem>
+                </Box>
+              );
+            })}
+          </List>
+        )}
 
-              <TextField
-                label="Descrição"
-                fullWidth
-                margin="normal"
-                placeholder="Descrição da transação"
-                {...register('descricao', {
-                  required: 'Por favor, preencha a descrição',
-                  minLength: {
-                    value: 3,
-                    message: 'A descrição deve ter pelo menos 3 caracteres'
-                  }
-                })}
-                error={Boolean(errors.descricao)}
-                helperText={errors.descricao?.message}
-              />
+        <Divider sx={{ my: 2 }} />
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Typography variant="subtitle1">Soma</Typography>
+          <Chip
+            label={currencyFormatter.format(balance)}
+            color={balance >= 0 ? 'success' : 'error'}
+            sx={{ fontWeight: 600 }}
+          />
+        </Stack>
+      </Paper>
 
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                sx={{ mt: 2 }}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Salvando...' : 'Salvar Transação'}
-              </Button>
-            </Box>
-          </Paper>
-        </Grid>
+      <Dialog open={isModalOpen} onClose={closeTransactionModal} fullWidth maxWidth="sm">
+        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+          <DialogTitle>Nova Transação</DialogTitle>
+          <DialogContent dividers>
+            <TextField
+              select
+              label="Tipo"
+              fullWidth
+              margin="normal"
+              defaultValue="receita"
+              {...register('tipo', {
+                required: 'Selecione o tipo de transação'
+              })}
+              error={Boolean(errors.tipo)}
+              helperText={errors.tipo?.message}
+            >
+              <MenuItem value="receita">Receita</MenuItem>
+              <MenuItem value="despesa">Despesa</MenuItem>
+            </TextField>
 
-        <Grid item xs={12} md={8}>
-          <Paper elevation={2} sx={{ p: 3, minHeight: 400 }}>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
-              <Typography variant="h6">Extrato</Typography>
-              <Chip label={`${transactions.length} item(s)`} color="primary" variant="outlined" />
-            </Stack>
+            <TextField
+              label="Valor"
+              type="number"
+              fullWidth
+              margin="normal"
+              inputProps={{ step: '0.01', min: '0.01' }}
+              {...register('valor', {
+                required: 'Por favor, preencha o valor',
+                min: {
+                  value: 0.01,
+                  message: 'O valor deve ser maior que zero'
+                },
+                validate: {
+                  isPositive: (value) =>
+                    parseFloat(value) > 0 || 'O valor deve ser maior que zero'
+                }
+              })}
+              error={Boolean(errors.valor)}
+              helperText={errors.valor?.message}
+            />
 
-            {transactions.length === 0 ? (
-              <Typography color="text.secondary">
-                Nenhuma transação cadastrada.
-              </Typography>
-            ) : (
-              <List disablePadding>
-                {transactions.map((t, index) => {
-                  const amount = Number(t.amount) || 0;
-                  const formattedAmount = currencyFormatter.format(Math.abs(amount));
-                  const prefix = t.transactionType === 'receita' ? '+' : '-';
-                  const amountColor = t.transactionType === 'receita' ? 'success.main' : 'error.main';
-                  const [ano = '', mes = '', dia = ''] = (t.occurredOn || '').split('-');
-                  const description = t.description?.trim() || 'Sem descrição';
+            <TextField
+              label="Data"
+              type="date"
+              fullWidth
+              margin="normal"
+              InputLabelProps={{ shrink: true }}
+              {...register('data', {
+                required: 'Por favor, selecione uma data'
+              })}
+              error={Boolean(errors.data)}
+              helperText={errors.data?.message}
+            />
 
-                  return (
-                    <Box key={t.id || index}>
-                      {index !== 0 && <Divider sx={{ my: 1 }} />}
-                      <ListItem
-                        disableGutters
-                        secondaryAction={
-                          <IconButton edge="end" color="error" onClick={() => handleDelete(t.id)}>
-                            <DeleteOutline />
-                          </IconButton>
-                        }
-                      >
-                        <ListItemText
-                          primary={`${dia}/${mes}/${ano} - ${description}`}
-                          secondary={`Tipo: ${t.transactionType === 'receita' ? 'Receita' : 'Despesa'}`}
-                        />
-                        <Typography variant="subtitle1" sx={{ color: amountColor, fontWeight: 600, mr: 4 }}>
-                          {`${prefix} ${formattedAmount}`}
-                        </Typography>
-                      </ListItem>
-                    </Box>
-                  );
-                })}
-              </List>
-            )}
-
-            <Divider sx={{ my: 2 }} />
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="subtitle1">Soma</Typography>
-              <Chip
-                label={currencyFormatter.format(balance)}
-                color={balance >= 0 ? 'success' : 'error'}
-                sx={{ fontWeight: 600 }}
-              />
-            </Stack>
-          </Paper>
-        </Grid>
-      </Grid>
+            <TextField
+              label="Descrição"
+              fullWidth
+              margin="normal"
+              placeholder="Descrição da transação"
+              {...register('descricao', {
+                required: 'Por favor, preencha a descrição',
+                minLength: {
+                  value: 3,
+                  message: 'A descrição deve ter pelo menos 3 caracteres'
+                }
+              })}
+              error={Boolean(errors.descricao)}
+              helperText={errors.descricao?.message}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeTransactionModal} color="inherit">
+              Cancelar
+            </Button>
+            <Button type="submit" variant="contained" disabled={isSubmitting}>
+              {isSubmitting ? 'Salvando...' : 'Salvar Transação'}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
     </Container>
   );
 }
