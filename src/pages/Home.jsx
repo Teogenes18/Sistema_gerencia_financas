@@ -184,8 +184,7 @@ export default function Home() {
           p: 3,
           minHeight: 480,
           display: 'flex',
-          flexDirection: 'column',
-          overflow: 'visible'
+          flexDirection: 'column'
         }}
       >
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
@@ -198,7 +197,10 @@ export default function Home() {
             Nenhuma transação cadastrada.
           </Typography>
         ) : (
-          <List sx={{ flexGrow: 1, overflowY: 'auto' }} disablePadding>
+          <List sx={{
+            overflowY: 'auto',
+            overflowX: 'hidden'
+          }} disablePadding>
             {transactions.map((t, index) => {
               const amount = Number(t.amount) || 0;
               const formattedAmount = currencyFormatter.format(Math.abs(amount));
