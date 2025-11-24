@@ -21,6 +21,12 @@ async function addBank(bank) {
   return { success: true, message: 'Banco cadastrado com sucesso.' };
 }
 
+async function listBanks() {
+  const banks = await Bank.findAll({ attributes: ['id', 'name'], order: [['name', 'ASC']] });
+  return banks.map(b => b.get({ plain: true }));
+}
+
 module.exports = {
   addBank
+ ,listBanks
 };

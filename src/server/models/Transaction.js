@@ -21,8 +21,28 @@ const Transaction = sequelize.define('Transaction', {
   },
   description: {
     type: DataTypes.STRING,
-    allowNull: true
+    allowNull: false
   },
+  categoryId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'categories',
+      key: 'id'
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'SET NULL'
+ },
+  bankId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'banks',
+      key: 'id'
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'SET NULL'
+ },
   userEmail: {
     type: DataTypes.STRING,
     allowNull: false

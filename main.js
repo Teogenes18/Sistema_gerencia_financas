@@ -22,9 +22,12 @@ function createWindow() {
     }
   });
 
-  if (process.env.NODE_ENV === 'development') {
+  const isDev = process.env.NODE_ENV === 'development';
+  const devtoolsDisabled = process.env.DISABLE_DEVTOOLS === 'true';
+
+  if (isDev) {
     mainWindow.loadURL('http://localhost:1234');
-    mainWindow.webContents.openDevTools();
+    if (!devtoolsDisabled) mainWindow.webContents.openDevTools({ mode: 'detach' });
   } else {
     mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
   }
@@ -46,6 +49,11 @@ function registerIpcHandlers() {
     return bankController.addBank(bank);
   });
 
+  ipcMain.handle('listBanks', async () => {
+    const { bankController: bc } = require('./src/server/controllers');
+    return bc.listBanks();
+  });
+
   ipcMain.handle('registerUser', async (event, user) => {
     return userController.registerUser(user);
   });
@@ -56,6 +64,11 @@ function registerIpcHandlers() {
 
   ipcMain.handle('checkUserExists', async () => {
     return userController.checkUserExists();
+  });
+
+  ipcMain.handle('listCategories', async () => {
+    const { categoryController } = require('./src/server/controllers');
+    return require('./src/server/controllers').categoryController.listCategories();
   });
 }
 

@@ -1,11 +1,17 @@
-const { Transaction } = require('../models');
+const { Transaction, Category, Bank } = require('../models');
 
 async function addTransaction(tx) {
+  if (tx.categoryId == null) {
+    return { success: false, message: 'Categoria é obrigatório' };
+  }
+
   const payload = {
     transactionType: tx.transactionType,
     amount: tx.amount,
     occurredOn: tx.occurredOn,
     description: tx.description || null,
+    categoryId: tx.categoryId,
+    bankId: typeof tx.bankId !== 'undefined' ? tx.bankId : null,
     userEmail: tx.userEmail,
     status: typeof tx.status === 'number' ? tx.status : 1
   };
@@ -17,6 +23,17 @@ async function addTransaction(tx) {
 async function listTransactions(userEmail) {
   const results = await Transaction.findAll({
     where: { userEmail },
+    include:[{
+        model: Category,
+        as: 'category', 
+        attributes: ['id', 'name']
+      }
+      ,{
+        model: Bank,
+        as: 'bank',
+        attributes: ['id', 'name']
+      }
+    ],
     order: [
       ['occurredOn', 'DESC'],
       ['id', 'DESC']

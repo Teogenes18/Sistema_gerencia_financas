@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import {
   AccountBalance,
   AddCircleOutline,
   DeleteOutline,
-  Logout
+  Logout,
+  FilterList
 } from '@mui/icons-material';
 import {
   Avatar,
@@ -22,6 +23,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Menu,
   MenuItem,
   Paper,
   Stack,
@@ -35,13 +37,20 @@ export default function Home() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [banks, setBanks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
+  const [filterAnchorEl, setFilterAnchorEl] = useState(null);
+  const [filterCategoryId, setFilterCategoryId] = useState(null); // null => sem filtro
+  const [filterBankId, setFilterBankId] = useState(null);
+  const { control, register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
     defaultValues: {
       tipo: 'receita',
       valor: '',
       data: '',
-      descricao: ''
+      descricao: '',
+      categoryId: '',
+      bankId: ''
     }
   });
 
@@ -69,6 +78,33 @@ export default function Home() {
     }
   }, [user?.id]);
 
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const cats = await window.api.listCategories();
+        setCategories(Array.isArray(cats) ? cats : []);
+      } catch (e) {
+        console.error('Erro ao carregar categorias', e);
+        setCategories([]);
+      }
+    }
+    loadCategories();
+    async function loadBanks() {
+      try {
+        if (window.api.listBanks) {
+          const bs = await window.api.listBanks();
+          setBanks(Array.isArray(bs) ? bs : []);
+        } else {
+          setBanks([]);
+        }
+      } catch (e) {
+        console.error('Erro ao carregar bancos', e);
+        setBanks([]);
+      }
+    }
+    loadBanks();
+  }, []);
+
   const onSubmit = async (data) => {
     try {
       await window.api.addTransaction({
@@ -76,6 +112,8 @@ export default function Home() {
         amount: parseFloat(data.valor),
         occurredOn: data.data,
         description: data.descricao.trim(),
+        categoryId: parseInt(data.categoryId, 10) || null,
+        bankId: data.bankId ? parseInt(data.bankId, 10) : null,
         userEmail: user.id
       });
 
@@ -121,6 +159,38 @@ export default function Home() {
 
   const balanceColor = balance >= 0 ? 'success.main' : 'error.main';
 
+  const openFilterMenu = (event) => setFilterAnchorEl(event.currentTarget);
+  const closeFilterMenu = () => setFilterAnchorEl(null);
+  const handleSelectCategory = (value) => {
+    closeFilterMenu();
+    if (value === null) {
+      setFilterCategoryId(null);
+    } else {
+      setFilterCategoryId(Number(value));
+    }
+  };
+  const handleSelectBank = (value) => {
+    closeFilterMenu();
+    if (value === null) {
+      setFilterBankId(null);
+    } else {
+      setFilterBankId(Number(value));
+    }
+  };
+
+  const displayedTransactions = transactions.filter((t) => {
+    // bank filter
+    if (filterBankId != null) {
+      const bId = t.bankId ?? (t.bank && t.bank.id);
+      if (Number(bId) !== Number(filterBankId)) return false;
+    }
+    // category filter
+    if (filterCategoryId != null) {
+      if (!t.category || Number(t.category.id) !== Number(filterCategoryId)) return false;
+    }
+    return true;
+  });
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
@@ -148,14 +218,6 @@ export default function Home() {
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} mb={3}>
         <Button
           variant="contained"
-          startIcon={<AccountBalance />}
-          onClick={goToBank}
-          sx={{ flexGrow: 1 }}
-        >
-          Cadastrar Banco
-        </Button>
-        <Button
-          variant="contained"
           color="secondary"
           startIcon={<AddCircleOutline fontSize="large" />}
           size="large"
@@ -167,6 +229,14 @@ export default function Home() {
           onClick={openTransactionModal}
         >
           Adicionar Transação
+        </Button>
+        <Button
+          variant="contained"
+          startIcon={<AccountBalance />}
+          onClick={goToBank}
+          sx={{ flexGrow: 1 }}
+        >
+          Cadastrar Banco
         </Button>
         <Paper elevation={1} sx={{ px: 3, py: 2 }}>
           <Typography variant="subtitle2" color="text.secondary">
@@ -189,25 +259,114 @@ export default function Home() {
       >
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
           <Typography variant="h6">Extrato</Typography>
-          <Chip label={`${transactions.length} item(s)`} color="primary" variant="outlined" />
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Chip label={`${transactions.length} item(s)`} color="primary" variant="outlined" />
+            <Button
+              variant={filterBankId || filterCategoryId ? 'contained' : 'outlined'}
+              startIcon={<FilterList />}
+              onClick={openFilterMenu}
+            >
+              Filtrar
+            </Button>
+            {filterBankId != null && (
+              <Chip
+                label={(() => {
+                  const b = banks.find(x => Number(x.id) === Number(filterBankId));
+                  return b ? b.name : `Banco #${filterBankId}`;
+                })()}
+                onDelete={() => setFilterBankId(null)}
+                color="info"
+              />
+            )}
+            {filterCategoryId != null && (
+              <Chip
+                label={(() => {
+                  const c = categories.find(x => Number(x.id) === Number(filterCategoryId));
+                  return c ? c.name : `Categoria #${filterCategoryId}`;
+                })()}
+                onDelete={() => setFilterCategoryId(null)}
+                color="info"
+              />
+            )}
+          </Stack>
         </Stack>
+        <Menu
+          anchorEl={filterAnchorEl}
+          open={Boolean(filterAnchorEl)}
+          onClose={closeFilterMenu}
+        >
+          <MenuItem onClick={() => { handleSelectBank(null); setFilterCategoryId(null); }}>Limpar filtros</MenuItem>
 
-        {transactions.length === 0 ? (
-          <Typography color="text.secondary">
-            Nenhuma transação cadastrada.
-          </Typography>
+          {/* Banks selector (first) */}
+          {(!banks || banks.length === 0) ? (
+            <MenuItem disabled>
+              <Typography color="error">Nenhum Banco cadastrado</Typography>
+            </MenuItem>
+          ) : (
+            <div>
+              <MenuItem disabled>Banco</MenuItem>
+              {banks.map((b) => (
+                <MenuItem
+                  key={b.id}
+                  onClick={() => handleSelectBank(b.id)}
+                  selected={filterBankId != null && Number(filterBankId) === Number(b.id)}
+                >
+                  {b.name}
+                </MenuItem>
+              ))}
+            </div>
+          )}
+
+          <Divider />
+
+          {/* Categories selector (below) */}
+          <MenuItem disabled>Categoria</MenuItem>
+          {categories && categories.length > 0 ? (
+            categories.map((c) => (
+              <MenuItem
+                key={c.id}
+                onClick={() => handleSelectCategory(c.id)}
+                selected={filterCategoryId != null && Number(filterCategoryId) === Number(c.id)}
+              >
+                {c.name}
+              </MenuItem>
+            ))
+          ) : (
+            <MenuItem disabled>Nenhuma categoria</MenuItem>
+          )}
+        </Menu>
+
+        {displayedTransactions.length === 0 ? (
+          (filterBankId != null && filterCategoryId == null) ? (
+            <Typography color="error.main" sx={{ mt: 2 }}>
+              Nenhuma transação salva com esse banco.
+            </Typography>
+          ) : (filterCategoryId != null && filterBankId == null) ? (
+            <Typography color="error.main" sx={{ mt: 2 }}>
+              Nenhuma transação salva com essa categoria.
+            </Typography>
+          ) : (filterCategoryId != null && filterBankId != null) ? (
+            <Typography color="error.main" sx={{ mt: 2 }}>
+              Nenhuma transação salva com esse filtro.
+            </Typography>
+          ) : (
+            <Typography color="text.secondary">
+              Nenhuma transação cadastrada.
+            </Typography>
+          )
         ) : (
           <List sx={{
             overflowY: 'auto',
             overflowX: 'hidden'
           }} disablePadding>
-            {transactions.map((t, index) => {
+            {displayedTransactions.map((t, index) => {
               const amount = Number(t.amount) || 0;
               const formattedAmount = currencyFormatter.format(Math.abs(amount));
               const prefix = t.transactionType === 'receita' ? '+' : '-';
               const amountColor = t.transactionType === 'receita' ? 'success.main' : 'error.main';
               const [ano = '', mes = '', dia = ''] = (t.occurredOn || '').split('-');
               const description = t.description?.trim() || 'Sem descrição';
+              const categoryName = t.category?.name || 'Sem categoria';
 
               return (
                 <Box key={t.id || index}>
@@ -222,7 +381,16 @@ export default function Home() {
                   >
                     <ListItemText
                       primary={`${dia}/${mes}/${ano} - ${description}`}
-                      secondary={`Tipo: ${t.transactionType === 'receita' ? 'Receita' : 'Despesa'}`}
+                      secondary={
+                        <>
+                          <Typography component="span" variant="body2" color="text.primary" sx={{ display: 'block' }}>
+                            Tipo: {t.transactionType === 'receita' ? 'Receita' : 'Despesa'}
+                          </Typography>
+                          <Typography component="span" variant="body2" color="text.secondary" sx={{ display: 'block' }}>
+                            Categoria: {categoryName}
+                          </Typography>
+                        </>
+                      }
                     />
                     <Typography variant="subtitle1" sx={{ color: amountColor, fontWeight: 600, mr: 4 }}>
                       {`${prefix} ${formattedAmount}`}
@@ -314,6 +482,69 @@ export default function Home() {
               error={Boolean(errors.descricao)}
               helperText={errors.descricao?.message}
             />
+
+            <Controller
+              name="categoryId"
+              control={control}
+              rules={{ required: 'Selecione a categoria da transação' }}
+              defaultValue={''}
+              render={({ field, fieldState }) => (
+                <TextField
+                  {...field}
+                  select
+                  label="Categoria"
+                  fullWidth
+                  margin="normal"
+                  error={Boolean(fieldState.error)}
+                  helperText={fieldState.error?.message}
+                >
+                  {categories && categories.length > 0 ? (
+                    categories.map((c) => (
+                      <MenuItem key={c.id} value={c.id}>
+                        {c.name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <>
+                      <MenuItem value={1}>Salário</MenuItem>
+                      <MenuItem value={2}>Conta</MenuItem>
+                      <MenuItem value={3}>Alimentação</MenuItem>
+                      <MenuItem value={4}>Saúde</MenuItem>
+                      <MenuItem value={5}>Transporte</MenuItem>
+                      <MenuItem value={6}>Lazer</MenuItem>
+                    </>
+                  )}
+                </TextField>
+              )}
+            />
+
+            <Controller
+              name="bankId"
+              control={control}
+              defaultValue={''}
+              render={({ field, fieldState }) => (
+                <TextField
+                  {...field}
+                  select
+                  label="Banco"
+                  fullWidth
+                  margin="normal"
+                  error={Boolean(fieldState.error)}
+                  helperText={fieldState.error?.message}
+                >
+                  {banks && banks.length > 0 ? (
+                    banks.map((b) => (
+                      <MenuItem key={b.id} value={b.id}>
+                        {b.name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled>Nenhum Banco cadastrado</MenuItem>
+                  )}
+                </TextField>
+              )}
+            />
+
           </DialogContent>
           <DialogActions>
             <Button onClick={closeTransactionModal} color="inherit">
