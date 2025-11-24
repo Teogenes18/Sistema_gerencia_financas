@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { User } = require('../models');
 
 const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -23,7 +23,7 @@ async function registerUser(user) {
     return { success: false, message: 'A senha deve ter ao menos 8 caracteres, com letras e números.' };
   }
 
-  const hash = await bcrypt.hash(senha, 10);
+  const hash = bcrypt.hashSync(senha, 10);
   await User.create({ fullName: nome, email, passwordHash: hash });
 
   return { success: true, message: 'Usuário cadastrado com sucesso.' };
@@ -41,7 +41,7 @@ async function loginUser(credentials) {
     return { success: false, message: 'E-mail ou senha inválidos.' };
   }
 
-  const senhaOk = await bcrypt.compare(senha, user.passwordHash);
+  const senhaOk = bcrypt.compareSync(senha, user.passwordHash);
   if (!senhaOk) {
     return { success: false, message: 'E-mail ou senha inválidos.' };
   }
