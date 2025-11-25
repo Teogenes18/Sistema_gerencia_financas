@@ -81,10 +81,20 @@ export default function Bank() {
 
   const handleToggleStatus = async (id) => {
     try {
-      await window.api.toggleBankStatus(id);
-      loadBanks();
+      const result = await window.api.setBankStatus(id);
+      if (result.success) {
+        setApiMessage(result.message);
+        setMessageSeverity('success');
+        await loadBanks();
+        setTimeout(() => setApiMessage(''), 2000);
+      } else {
+        setApiMessage(result.message || 'Erro ao alterar status');
+        setMessageSeverity('error');
+      }
     } catch (error) {
-      console.error("Erro ao alterar status", error);
+      console.error('Erro ao alterar status:', error);
+      setApiMessage('Erro ao alterar status do banco');
+      setMessageSeverity('error');
     }
   };
 

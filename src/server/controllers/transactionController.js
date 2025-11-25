@@ -51,8 +51,27 @@ async function deleteTransaction({ id, userEmail }) {
   return { success: deleted > 0 };
 }
 
+async function updateTransactionStatus(id, userEmail, newStatus) {
+  try {
+    const [updated] = await Transaction.update(
+      { status: newStatus },
+      { 
+        where: { 
+          id, 
+          userEmail 
+        } 
+      }
+    );
+    return { success: updated > 0 };
+  } catch (error) {
+    console.error('Erro ao atualizar status:', error);
+    throw error;
+  }
+}
+
 module.exports = {
   addTransaction,
   listTransactions,
-  deleteTransaction
+  deleteTransaction,
+  updateTransactionStatus
 };

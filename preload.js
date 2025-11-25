@@ -10,5 +10,6 @@ contextBridge.exposeInMainWorld('api', {
   listBanks: () => ipcRenderer.invoke('listBanks'),
   deleteTransaction: (id,userEmail) => ipcRenderer.invoke('delete-transaction', {id,userEmail}),
   addBank: (bank) => ipcRenderer.invoke('addBank', bank),
-  setBankStatus: (id) => ipcRenderer.invoke('setBankStatus', id)
+  setBankStatus: (id) => ipcRenderer.invoke('setBankStatus', id),
+  updateTransactionStatus: (id, userEmail, status) => ipcRenderer.invoke('updateTransactionStatus', { id, userEmail, status })
 });

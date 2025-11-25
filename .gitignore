@@ -10,5 +10,7 @@ release/
 
 financas.db
 finance.sqlite
+finance.sqlite-shm
+finance.sqlite-wal
 
 .parcel-cache

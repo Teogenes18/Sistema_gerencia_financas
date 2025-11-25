@@ -30,7 +30,8 @@ import {
   Paper,
   Stack,
   TextField,
-  Typography
+  Typography,
+  Switch
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import logo from '../../assets/logo.png';
@@ -64,16 +65,22 @@ export default function Home() {
   }), []);
 
   const balance = useMemo(() => {
-    return transactions.reduce((total, tx) => {
+    let transactionBalance = transactions.reduce((total, tx) => {
       if (typeof tx.status !== 'undefined' && Number(tx.status) !== 1) return total;
-
       if (tx.bank && !tx.bank.isActive) return total;
 
       const amount = Number(tx.amount) || 0;
       const signal = tx.transactionType === 'receita' ? 1 : -1;
       return total + amount * signal;
     }, 0);
-  }, [transactions]);
+
+    let bankBalance = banks.reduce((total, bank) => {
+      if (!bank.isActive) return total;
+      return total + (Number(bank.balance) || 0);
+    }, 0);
+
+    return transactionBalance + bankBalance;
+  }, [transactions, banks]);
 
   const loadTransactions = useCallback(async () => {
     if (!user?.id) return;
@@ -122,7 +129,7 @@ export default function Home() {
         description: data.descricao.trim(),
         categoryId: parseInt(data.categoryId, 10) || null,
         bankId: data.bankId ? parseInt(data.bankId, 10) : null,
-        status: perseInt(data.status, 10),
+        status: parseInt(data.status, 10),
         userEmail: user.id
       });
 
@@ -206,6 +213,16 @@ const displayedTransactions = transactions.filter((t) => {
     return true;
   });
 
+  const handleToggleStatus = async (id, currentStatus) => {
+    try {
+      const newStatus = currentStatus === 1 ? 0 : 1;
+      await window.api.updateTransactionStatus(id, user.id, newStatus);
+      loadTransactions();
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error);
+    }
+  };
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
@@ -255,7 +272,7 @@ const displayedTransactions = transactions.filter((t) => {
         </Button>
         <Paper elevation={1} sx={{ px: 3, py: 2 }}>
           <Typography variant="subtitle2" color="text.secondary">
-            Saldo Atual
+            Saldo Total
           </Typography>
           <Typography variant="h4" sx={{ color: balanceColor, fontWeight: 600 }}>
             {currencyFormatter.format(balance)}
@@ -310,12 +327,20 @@ const displayedTransactions = transactions.filter((t) => {
           open={Boolean(filterAnchorEl)}
           onClose={closeFilterMenu}
         >
-          <MenuItem onClick={() => { handleSelectBank(null); setFilterCategoryId(null); 
-          setFilterStatus('all');
-          }}>Limpar filtros</MenuItem>
+          <MenuItem onClick={() => { 
+            handleSelectBank(null); 
+            setFilterCategoryId(null); 
+            setFilterStatus('all');
+          }}>
+            Limpar filtros
+          </MenuItem>
 
-          <div>
-          <MenuItem disabled>Status</MenuItem>
+          <Divider />
+
+          {/* Status Section */}
+          <MenuItem disabled sx={{ backgroundColor: '#f0f0f0', fontWeight: 'bold', color: '#333' }}>
+            Status
+          </MenuItem>
           <MenuItem 
             selected={filterStatus === 'all'} 
             onClick={() => { setFilterStatus('all'); closeFilterMenu(); }}
@@ -334,16 +359,19 @@ const displayedTransactions = transactions.filter((t) => {
           >
             Pendentes
           </MenuItem>
-          </div>
 
-          {/* Banks selector (first) */}
+          <Divider />
+
+          {/* Banks Section */}
           {(!banks || banks.length === 0) ? (
-            <MenuItem disabled>
-              <Typography color="error">Nenhum Banco cadastrado</Typography>
+            <MenuItem disabled sx={{ backgroundColor: '#f0f0f0', fontWeight: 'bold', color: '#333' }}>
+              Banco
             </MenuItem>
           ) : (
             <div>
-              <MenuItem disabled>Banco</MenuItem>
+              <MenuItem disabled sx={{ backgroundColor: '#f0f0f0', fontWeight: 'bold', color: '#333' }}>
+                Banco
+              </MenuItem>
               {banks.map((b) => (
                 <MenuItem
                   key={b.id}
@@ -358,8 +386,10 @@ const displayedTransactions = transactions.filter((t) => {
 
           <Divider />
 
-          {/* Categories selector (below) */}
-          <MenuItem disabled>Categoria</MenuItem>
+          {/* Categories Section */}
+          <MenuItem disabled sx={{ backgroundColor: '#f0f0f0', fontWeight: 'bold', color: '#333' }}>
+            Categoria
+          </MenuItem>
           {categories && categories.length > 0 ? (
             categories.map((c) => (
               <MenuItem
@@ -413,9 +443,18 @@ const displayedTransactions = transactions.filter((t) => {
                   <ListItem
                     disableGutters
                     secondaryAction={
-                      <IconButton edge="end" color="error" onClick={() => handleDelete(t.id)}>
-                        <DeleteOutline />
-                      </IconButton>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Switch
+                          edge="end"
+                          checked={t.status === 1}
+                          onChange={() => handleToggleStatus(t.id, t.status)}
+                          color="primary"
+                          title={t.status === 1 ? "Marcar como pendente" : "Marcar como efetuada"}
+                        />
+                        <IconButton edge="end" color="error" onClick={() => handleDelete(t.id)}>
+                          <DeleteOutline />
+                        </IconButton>
+                      </Box>
                     }
                   >
 

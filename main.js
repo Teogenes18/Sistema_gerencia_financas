@@ -75,6 +75,17 @@ function registerIpcHandlers() {
     const { bankController } = require('./src/server/controllers');
     return bankController.setBankStatus(id);
   });
+
+  ipcMain.handle('updateTransactionStatus', async (event, { id, userEmail, status }) => {
+    try {
+      const { transactionController } = require('./src/server/controllers');
+      const result = await transactionController.updateTransactionStatus(id, userEmail, status);
+      return result;
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error);
+      return { success: false, message: 'Erro ao atualizar status.' };
+    }
+  });
 }
 
 dbReady
