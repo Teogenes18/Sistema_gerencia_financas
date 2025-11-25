@@ -31,7 +31,7 @@ async function listTransactions(userEmail) {
       ,{
         model: Bank,
         as: 'bank',
-        attributes: ['id', 'name']
+        attributes: ['id', 'name', 'isActive']
       }
     ],
     order: [

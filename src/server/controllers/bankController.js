@@ -22,11 +22,30 @@ async function addBank(bank) {
 }
 
 async function listBanks() {
-  const banks = await Bank.findAll({ attributes: ['id', 'name'], order: [['name', 'ASC']] });
+  const banks = await Bank.findAll({ attributes: ['id', 'name', 'balance', 'isActive'], order: [['name', 'ASC']] });
   return banks.map(b => b.get({ plain: true }));
 }
 
+async function setBankStatus(id) {
+  try {
+    const bank = await Bank.findByPk(id);
+    if (!bank) {
+      return { success: false, message: 'Banco não encontrado.' };
+    }
+    
+    bank.isActive = !bank.isActive;
+    await bank.save();
+    
+    const statusMsg = bank.isActive ? 'ativado' : 'desativado';
+    return { success: true, message: `Banco ${statusMsg} com sucesso.` };
+  } catch (error) {
+    console.error('Erro ao alterar status do banco:', error);
+    return { success: false, message: 'Erro ao alterar status.' };
+  }
+}
+
 module.exports = {
-  addBank
- ,listBanks
+  addBank,
+  listBanks,
+  setBankStatus
 };

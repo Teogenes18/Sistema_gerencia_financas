@@ -65,6 +65,10 @@ export default function Home() {
 
   const balance = useMemo(() => {
     return transactions.reduce((total, tx) => {
+      if (typeof tx.status !== 'undefined' && Number(tx.status) !== 1) return total;
+
+      if (tx.bank && !tx.bank.isActive) return total;
+
       const amount = Number(tx.amount) || 0;
       const signal = tx.transactionType === 'receita' ? 1 : -1;
       return total + amount * signal;
@@ -589,7 +593,9 @@ const displayedTransactions = transactions.filter((t) => {
                   helperText={fieldState.error?.message}
                 >
                   {banks && banks.length > 0 ? (
-                    banks.map((b) => (
+                    banks
+                    .filter(b => b.isActive)
+                    .map((b) => (
                       <MenuItem key={b.id} value={b.id}>
                         {b.name}
                       </MenuItem>

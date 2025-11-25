@@ -70,6 +70,11 @@ function registerIpcHandlers() {
     const { categoryController } = require('./src/server/controllers');
     return require('./src/server/controllers').categoryController.listCategories();
   });
+
+  ipcMain.handle('setBankStatus', async (event, id) => {
+    const { bankController } = require('./src/server/controllers');
+    return bankController.setBankStatus(id);
+  });
 }
 
 dbReady
