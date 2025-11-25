@@ -6,7 +6,9 @@ import {
   AddCircleOutline,
   DeleteOutline,
   Logout,
-  FilterList
+  FilterList,
+  CheckCircle,
+  AccessTime
 } from '@mui/icons-material';
 import {
   Avatar,
@@ -43,6 +45,7 @@ export default function Home() {
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [filterCategoryId, setFilterCategoryId] = useState(null); // null => sem filtro
   const [filterBankId, setFilterBankId] = useState(null);
+  const [filterStatus, setFilterStatus] = useState('all'); 
   const { control, register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
     defaultValues: {
       tipo: 'receita',
@@ -50,7 +53,8 @@ export default function Home() {
       data: '',
       descricao: '',
       categoryId: '',
-      bankId: ''
+      bankId: '',
+      status: 1
     }
   });
 
@@ -114,6 +118,7 @@ export default function Home() {
         description: data.descricao.trim(),
         categoryId: parseInt(data.categoryId, 10) || null,
         bankId: data.bankId ? parseInt(data.bankId, 10) : null,
+        status: perseInt(data.status, 10),
         userEmail: user.id
       });
 
@@ -127,7 +132,7 @@ export default function Home() {
   };
 
   const handleDelete = async (id) => {
-    const confirmed = confirm('Tem certeza que deseja excluir esta transação?');
+    const confirmed = window.confirm('Tem certeza que deseja excluir esta transação?');
     if (!confirmed) return;
 
     try {
@@ -178,7 +183,7 @@ export default function Home() {
     }
   };
 
-  const displayedTransactions = transactions.filter((t) => {
+const displayedTransactions = transactions.filter((t) => {
     // bank filter
     if (filterBankId != null) {
       const bId = t.bankId ?? (t.bank && t.bank.id);
@@ -188,6 +193,12 @@ export default function Home() {
     if (filterCategoryId != null) {
       if (!t.category || Number(t.category.id) !== Number(filterCategoryId)) return false;
     }
+    
+    // status filter
+    if (filterStatus !== 'all') {
+      if (Number(t.status) !== Number(filterStatus)) return false;
+    }
+
     return true;
   });
 
@@ -295,7 +306,31 @@ export default function Home() {
           open={Boolean(filterAnchorEl)}
           onClose={closeFilterMenu}
         >
-          <MenuItem onClick={() => { handleSelectBank(null); setFilterCategoryId(null); }}>Limpar filtros</MenuItem>
+          <MenuItem onClick={() => { handleSelectBank(null); setFilterCategoryId(null); 
+          setFilterStatus('all');
+          }}>Limpar filtros</MenuItem>
+
+          <div>
+          <MenuItem disabled>Status</MenuItem>
+          <MenuItem 
+            selected={filterStatus === 'all'} 
+            onClick={() => { setFilterStatus('all'); closeFilterMenu(); }}
+          >
+            Todos
+          </MenuItem>
+          <MenuItem 
+            selected={filterStatus === '1'} 
+            onClick={() => { setFilterStatus('1'); closeFilterMenu(); }}
+          >
+            Efetuadas
+          </MenuItem>
+          <MenuItem 
+            selected={filterStatus === '0'} 
+            onClick={() => { setFilterStatus('0'); closeFilterMenu(); }}
+          >
+            Pendentes
+          </MenuItem>
+          </div>
 
           {/* Banks selector (first) */}
           {(!banks || banks.length === 0) ? (
@@ -379,6 +414,15 @@ export default function Home() {
                       </IconButton>
                     }
                   >
+
+                <Box sx={{ mr: 2, display: 'flex', alignItems: 'center' }} title={t.status === 1 ? "Efetuada" : "Pendente"}>
+                      {t.status === 1 ? (
+                        <CheckCircle color="success" fontSize="small" />
+                      ) : (
+                        <AccessTime color="action" fontSize="small" />
+                      )}
+                    </Box>
+
                     <ListItemText
                       primary={`${dia}/${mes}/${ano} - ${description}`}
                       secondary={
@@ -482,6 +526,18 @@ export default function Home() {
               error={Boolean(errors.descricao)}
               helperText={errors.descricao?.message}
             />
+
+      <TextField
+              select
+              label="Status"
+              fullWidth
+              margin="normal"
+              defaultValue={1}
+              {...register('status', { required: true })}
+            >
+              <MenuItem value={1}>Efetuada</MenuItem>
+              <MenuItem value={0}>Pendente</MenuItem>
+            </TextField>
 
             <Controller
               name="categoryId"
