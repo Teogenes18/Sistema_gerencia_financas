@@ -51,7 +51,7 @@ export default function Home() {
     defaultValues: {
       tipo: 'receita',
       valor: '',
-      data: (new Date()).toDateString(),
+      data: (new Date()).toISOString(),
       descricao: '',
       categoryId: '',
       bankId: '',
@@ -284,7 +284,7 @@ const displayedTransactions = transactions.filter((t) => {
           onClick={goToBank}
           sx={{ flexGrow: 1 }}
         >
-          Cadastrar Banco
+          Meus Bancos
         </Button>
         <Paper elevation={1} sx={{ px: 3, py: 2 }}>
           <Typography variant="subtitle2" color="text.secondary">
