@@ -47,17 +47,6 @@ export default function Home() {
   const [filterCategoryId, setFilterCategoryId] = useState(null); // null => sem filtro
   const [filterBankId, setFilterBankId] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all'); 
-  const { control, register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
-    defaultValues: {
-      tipo: 'receita',
-      valor: '',
-      data: (new Date()).toISOString(),
-      descricao: '',
-      categoryId: '',
-      bankId: '',
-      status: 1
-    }
-  });
 
   const getTodayDate = () => {
     const today = new Date();
@@ -66,6 +55,20 @@ export default function Home() {
     const day = String(today.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
+  
+  const { control, register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
+    defaultValues: {
+      tipo: 'receita',
+      valor: '',
+      data: getTodayDate(),
+      descricao: '',
+      categoryId: '',
+      bankId: '',
+      status: 1
+    }
+  });
+
+  
 
   const currencyFormatter = useMemo(() => new Intl.NumberFormat('pt-BR', {
     style: 'currency',
