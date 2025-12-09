@@ -59,6 +59,14 @@ export default function Home() {
     }
   });
 
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const currencyFormatter = useMemo(() => new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL'
@@ -166,7 +174,15 @@ export default function Home() {
   const openTransactionModal = () => setIsModalOpen(true);
   const closeTransactionModal = () => {
     setIsModalOpen(false);
-    reset();
+    reset({
+      tipo: 'receita',
+      valor: '',
+      data: getTodayDate(),
+      descricao: '',
+      categoryId: '',
+      bankId: '',
+      status: 1
+    });
   };
 
   useEffect(() => {
