@@ -51,7 +51,7 @@ export default function Home() {
     defaultValues: {
       tipo: 'receita',
       valor: '',
-      data: '',
+      data: (new Date()).toDateString(),
       descricao: '',
       categoryId: '',
       bankId: '',
