@@ -10,7 +10,8 @@ import {
   CheckCircle,
   AccessTime,
   Edit as EditIcon,
-  BarChart as BarChartIcon
+  BarChart as BarChartIcon,
+  FileDownload
 } from '@mui/icons-material';
 import {
   Avatar,
@@ -27,7 +28,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  Menu,
   MenuItem,
   Paper,
   Stack,
@@ -37,6 +37,7 @@ import {
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import logo from '../../assets/logo.png';
+import jsPDF from 'jspdf';
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -47,7 +48,6 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
-  const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [filterCategoryId, setFilterCategoryId] = useState(null);
   const [filterBankId, setFilterBankId] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
@@ -59,6 +59,19 @@ export default function Home() {
     const day = String(today.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
+
+  const getFirstDayOfMonth = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}-01`;
+  };
+
+  const [pdfStartDate, setPdfStartDate] = useState(getFirstDayOfMonth());
+  const [pdfEndDate, setPdfEndDate] = useState(getTodayDate());
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [exportFormat, setExportFormat] = useState('csv');
   
   const { control, register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
     defaultValues: {
@@ -72,7 +85,6 @@ export default function Home() {
     }
   });
 
-  // Formulário para edição
   const { control: editControl, register: editRegister, handleSubmit: editHandleSubmit, formState: { errors: editErrors, isSubmitting: editIsSubmitting }, reset: editReset } = useForm();
 
   const currencyFormatter = useMemo(() => new Intl.NumberFormat('pt-BR', {
@@ -235,10 +247,7 @@ export default function Home() {
 
   const balanceColor = balance >= 0 ? 'success.main' : 'error.main';
 
-  const openFilterMenu = (event) => setFilterAnchorEl(event.currentTarget);
-  const closeFilterMenu = () => setFilterAnchorEl(null);
   const handleSelectCategory = (value) => {
-    closeFilterMenu();
     if (value === null) {
       setFilterCategoryId(null);
     } else {
@@ -246,7 +255,6 @@ export default function Home() {
     }
   };
   const handleSelectBank = (value) => {
-    closeFilterMenu();
     if (value === null) {
       setFilterBankId(null);
     } else {
@@ -255,17 +263,14 @@ export default function Home() {
   };
 
 const displayedTransactions = transactions.filter((t) => {
-    // bank filter
     if (filterBankId != null) {
       const bId = t.bankId ?? (t.bank && t.bank.id);
       if (Number(bId) !== Number(filterBankId)) return false;
     }
-    // category filter
     if (filterCategoryId != null) {
       if (!t.category || Number(t.category.id) !== Number(filterCategoryId)) return false;
     }
     
-    // status filter
     if (filterStatus !== 'all') {
       if (Number(t.status) !== Number(filterStatus)) return false;
     }
@@ -281,6 +286,85 @@ const displayedTransactions = transactions.filter((t) => {
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
     }
+  };
+
+  const exportToCSV = () => {
+    const headers = ['Data', 'Tipo', 'Valor', 'Descrição', 'Categoria', 'Banco', 'Status'];
+    const rows = displayedTransactions.map(t => {
+      const data = t.occurredOn.split('-').reverse().join('/');
+      const tipo = t.transactionType === 'receita' ? 'Receita' : 'Despesa';
+      const valor = t.amount;
+      const descricao = t.description || '';
+      const categoria = t.category?.name || '';
+      const banco = t.bank?.name || '';
+      const status = t.status === 1 ? 'Efetuada' : 'Pendente';
+      return [data, tipo, valor, descricao, categoria, banco, status];
+    });
+    const csvContent = [headers, ...rows].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'transacoes.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+    setIsExportModalOpen(false);
+  };
+
+  const exportToPDF = () => {
+  };
+
+  const handleExportPdf = () => {
+    const filteredTransactions = transactions.filter(t => {
+      const date = new Date(t.occurredOn);
+      const start = pdfStartDate ? new Date(pdfStartDate) : null;
+      const end = pdfEndDate ? new Date(pdfEndDate) : null;
+      if (start && date < start) return false;
+      if (end && date > end) return false;
+      return true;
+    }).sort((a, b) => new Date(a.occurredOn) - new Date(b.occurredOn));
+
+    const pdf = new jsPDF();
+    pdf.setFontSize(20);
+    pdf.text('Relatório de Transações', 20, 20);
+
+    pdf.setFontSize(12);
+    pdf.text(`Período: ${pdfStartDate || 'Todos'} a ${pdfEndDate}`, 20, 35);
+    pdf.text(`Total de transações: ${filteredTransactions.length}`, 20, 45);
+
+    let y = 60;
+    let balance = 0;
+
+    filteredTransactions.forEach(t => {
+      if (y > 270) {
+        pdf.addPage();
+        y = 20;
+      }
+      const amount = Number(t.amount) || 0;
+      const signal = t.transactionType === 'receita' ? 1 : -1;
+      balance += amount * signal;
+
+      const type = t.transactionType === 'receita' ? 'Receita' : 'Despesa';
+      const category = t.category ? t.category.name : 'Sem categoria';
+      const bank = t.bank ? t.bank.name : 'Sem banco';
+
+      pdf.setFontSize(10);
+      pdf.text(`Data: ${t.occurredOn}`, 20, y);
+      pdf.text(`Descrição: ${t.description}`, 20, y + 5);
+      pdf.text(`Tipo: ${type}`, 20, y + 10);
+      pdf.text(`Valor: ${currencyFormatter.format(amount)}`, 20, y + 15);
+      pdf.text(`Categoria: ${category}`, 20, y + 20);
+      pdf.text(`Banco: ${bank}`, 20, y + 25);
+      pdf.text(`Saldo acumulado: ${currencyFormatter.format(balance)}`, 20, y + 30);
+
+      y += 40;
+    });
+
+    pdf.setFontSize(14);
+    pdf.text(`Saldo final no período: ${currencyFormatter.format(balance)}`, 20, y + 10);
+
+    pdf.save(`transacoes-${pdfStartDate || 'inicio'}-${pdfEndDate}.pdf`);
+    setIsExportModalOpen(false);
   };
 
   return (
@@ -365,9 +449,16 @@ const displayedTransactions = transactions.filter((t) => {
             <Button
               variant={filterBankId || filterCategoryId ? 'contained' : 'outlined'}
               startIcon={<FilterList />}
-              onClick={openFilterMenu}
+              onClick={() => setIsFilterModalOpen(true)}
             >
               Filtrar
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<FileDownload />}
+              onClick={() => setIsExportModalOpen(true)}
+            >
+              Exportar
             </Button>
             {filterBankId != null && (
               <Chip
@@ -391,88 +482,125 @@ const displayedTransactions = transactions.filter((t) => {
             )}
           </Stack>
         </Stack>
-        <Menu
-          anchorEl={filterAnchorEl}
-          open={Boolean(filterAnchorEl)}
-          onClose={closeFilterMenu}
-        >
-          <MenuItem onClick={() => { 
-            handleSelectBank(null); 
-            setFilterCategoryId(null); 
-            setFilterStatus('all');
-          }}>
-            Limpar filtros
-          </MenuItem>
 
-          <Divider />
+        <Dialog open={isFilterModalOpen} onClose={() => setIsFilterModalOpen(false)} fullWidth maxWidth="sm">
+          <DialogTitle>Filtrar Transações</DialogTitle>
+          <DialogContent>
+            <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>Status</Typography>
+            <TextField
+              select
+              fullWidth
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              margin="normal"
+            >
+              <MenuItem value="all">Todos</MenuItem>
+              <MenuItem value="1">Efetuadas</MenuItem>
+              <MenuItem value="0">Pendentes</MenuItem>
+            </TextField>
 
-          {/* Status Section */}
-          <MenuItem disabled sx={{ backgroundColor: '#f0f0f0', fontWeight: 'bold', color: '#333' }}>
-            Status
-          </MenuItem>
-          <MenuItem 
-            selected={filterStatus === 'all'} 
-            onClick={() => { setFilterStatus('all'); closeFilterMenu(); }}
-          >
-            Todos
-          </MenuItem>
-          <MenuItem 
-            selected={filterStatus === '1'} 
-            onClick={() => { setFilterStatus('1'); closeFilterMenu(); }}
-          >
-            Efetuadas
-          </MenuItem>
-          <MenuItem 
-            selected={filterStatus === '0'} 
-            onClick={() => { setFilterStatus('0'); closeFilterMenu(); }}
-          >
-            Pendentes
-          </MenuItem>
+            <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>Banco</Typography>
+            <TextField
+              select
+              fullWidth
+              value={filterBankId || ''}
+              onChange={(e) => handleSelectBank(e.target.value || null)}
+              margin="normal"
+            >
+              <MenuItem value="">Todos</MenuItem>
+              {banks && banks.length > 0 ? (
+                banks.map((b) => (
+                  <MenuItem key={b.id} value={b.id}>
+                    {b.name}
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem disabled>Nenhum banco</MenuItem>
+              )}
+            </TextField>
 
-          <Divider />
+            <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>Categoria</Typography>
+            <TextField
+              select
+              fullWidth
+              value={filterCategoryId || ''}
+              onChange={(e) => handleSelectCategory(e.target.value || null)}
+              margin="normal"
+            >
+              <MenuItem value="">Todas</MenuItem>
+              {categories && categories.length > 0 ? (
+                categories.map((c) => (
+                  <MenuItem key={c.id} value={c.id}>
+                    {c.name}
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem disabled>Nenhuma categoria</MenuItem>
+              )}
+            </TextField>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => {
+              handleSelectBank(null);
+              setFilterCategoryId(null);
+              setFilterStatus('all');
+              setIsFilterModalOpen(false);
+            }} color="inherit">
+              Limpar Filtros
+            </Button>
+            <Button onClick={() => setIsFilterModalOpen(false)} variant="contained">
+              Aplicar
+            </Button>
+          </DialogActions>
+        </Dialog>
 
-          {/* Banks Section */}
-          {(!banks || banks.length === 0) ? (
-            <MenuItem disabled sx={{ backgroundColor: '#f0f0f0', fontWeight: 'bold', color: '#333' }}>
-              Banco
-            </MenuItem>
-          ) : (
-            <div>
-              <MenuItem disabled sx={{ backgroundColor: '#f0f0f0', fontWeight: 'bold', color: '#333' }}>
-                Banco
-              </MenuItem>
-              {banks.map((b) => (
-                <MenuItem
-                  key={b.id}
-                  onClick={() => handleSelectBank(b.id)}
-                  selected={filterBankId != null && Number(filterBankId) === Number(b.id)}
-                >
-                  {b.name}
-                </MenuItem>
-              ))}
-            </div>
-          )}
-
-          <Divider />
-
-          {/* Categories Section */}
-          <MenuItem disabled sx={{ backgroundColor: '#f0f0f0', fontWeight: 'bold', color: '#333' }}>
-            Categoria
-          </MenuItem>
-          {categories && categories.length > 0 ? (
-            categories.map((c) => (
-              <MenuItem
-                key={c.id}
-                onClick={() => handleSelectCategory(c.id)}
-                selected={filterCategoryId != null && Number(filterCategoryId) === Number(c.id)}
-              >
-                {c.name}
-              </MenuItem>
-            ))
-          ) : (
-            <MenuItem disabled>Nenhuma categoria</MenuItem>
-          )}
-        </Menu>
+        <Dialog open={isExportModalOpen} onClose={() => setIsExportModalOpen(false)} fullWidth maxWidth="sm">
+          <DialogTitle>Exportar Transações</DialogTitle>
+          <DialogContent>
+            <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>Formato</Typography>
+            <TextField
+              select
+              fullWidth
+              value={exportFormat}
+              onChange={(e) => setExportFormat(e.target.value)}
+              margin="normal"
+            >
+              <MenuItem value="csv">CSV</MenuItem>
+              <MenuItem value="pdf">PDF</MenuItem>
+            </TextField>
+            {exportFormat === 'pdf' && (
+              <>
+                <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>Período</Typography>
+                <TextField
+                  label="Data de Início"
+                  type="date"
+                  fullWidth
+                  margin="normal"
+                  value={pdfStartDate}
+                  onChange={(e) => setPdfStartDate(e.target.value)}
+                  InputLabelProps={{ shrink: true }}
+                />
+                <TextField
+                  label="Data de Fim"
+                  type="date"
+                  fullWidth
+                  margin="normal"
+                  value={pdfEndDate}
+                  onChange={(e) => setPdfEndDate(e.target.value)}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setIsExportModalOpen(false)} color="inherit">
+              Cancelar
+            </Button>
+            <Button onClick={exportFormat === 'csv' ? exportToCSV : handleExportPdf} variant="contained">
+              Exportar
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         {displayedTransactions.length === 0 ? (
           (filterBankId != null && filterCategoryId == null) ? (
