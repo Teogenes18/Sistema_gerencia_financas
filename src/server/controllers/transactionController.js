@@ -69,9 +69,34 @@ async function updateTransactionStatus(id, userEmail, newStatus) {
   }
 }
 
+async function updateTransaction(id, userEmail, updates) {
+  try {
+    const [updated] = await Transaction.update(
+      {
+        description: updates.description || undefined,
+        amount: updates.amount !== undefined ? updates.amount : undefined,
+        occurredOn: updates.occurredOn || undefined,
+        categoryId: updates.categoryId || undefined,
+        bankId: updates.bankId || undefined
+      },
+      { 
+        where: { 
+          id, 
+          userEmail 
+        }
+      }
+    );
+    return { success: updated > 0, message: 'Transação atualizada com sucesso.' };
+  } catch (error) {
+    console.error('Erro ao atualizar transação:', error);
+    throw error;
+  }
+}
+
 module.exports = {
   addTransaction,
   listTransactions,
   deleteTransaction,
-  updateTransactionStatus
+  updateTransactionStatus,
+  updateTransaction
 };

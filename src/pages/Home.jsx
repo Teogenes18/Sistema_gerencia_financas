@@ -8,7 +8,9 @@ import {
   Logout,
   FilterList,
   CheckCircle,
-  AccessTime
+  AccessTime,
+  Edit as EditIcon,
+  BarChart as BarChartIcon
 } from '@mui/icons-material';
 import {
   Avatar,
@@ -43,10 +45,12 @@ export default function Home() {
   const [categories, setCategories] = useState([]);
   const [banks, setBanks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState(null);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [filterCategoryId, setFilterCategoryId] = useState(null); // null => sem filtro
+  const [filterCategoryId, setFilterCategoryId] = useState(null);
   const [filterBankId, setFilterBankId] = useState(null);
-  const [filterStatus, setFilterStatus] = useState('all'); 
+  const [filterStatus, setFilterStatus] = useState('all');
 
   const getTodayDate = () => {
     const today = new Date();
@@ -68,7 +72,8 @@ export default function Home() {
     }
   });
 
-  
+  // Formulário para edição
+  const { control: editControl, register: editRegister, handleSubmit: editHandleSubmit, formState: { errors: editErrors, isSubmitting: editIsSubmitting }, reset: editReset } = useForm();
 
   const currencyFormatter = useMemo(() => new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -188,6 +193,42 @@ export default function Home() {
     });
   };
 
+  const openEditModal = (transaction) => {
+    setEditingTransaction(transaction);
+    editReset({
+      descricao: transaction.description,
+      valor: transaction.amount,
+      data: transaction.occurredOn,
+      categoryId: transaction.categoryId,
+      bankId: transaction.bankId
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditingTransaction(null);
+    editReset();
+  };
+
+  const onEditSubmit = async (data) => {
+    try {
+      await window.api.updateTransaction(editingTransaction.id, user.id, {
+        description: data.descricao.trim(),
+        amount: parseFloat(data.valor),
+        occurredOn: data.data,
+        categoryId: parseInt(data.categoryId, 10),
+        bankId: data.bankId ? parseInt(data.bankId, 10) : null
+      });
+
+      closeEditModal();
+      loadTransactions();
+    } catch (error) {
+      console.error('Erro ao atualizar transação:', error);
+      alert('Erro ao atualizar transação. Tente novamente.');
+    }
+  };
+
   useEffect(() => {
     loadTransactions();
   }, [loadTransactions]);
@@ -288,6 +329,15 @@ const displayedTransactions = transactions.filter((t) => {
           sx={{ flexGrow: 1 }}
         >
           Meus Bancos
+        </Button>
+        <Button
+          variant="contained"
+          color="info"
+          startIcon={<BarChartIcon />}
+          onClick={() => navigate('/charts')}
+          sx={{ flexGrow: 1 }}
+        >
+          Gráficos
         </Button>
         <Paper elevation={1} sx={{ px: 3, py: 2 }}>
           <Typography variant="subtitle2" color="text.secondary">
@@ -462,7 +512,16 @@ const displayedTransactions = transactions.filter((t) => {
                   <ListItem
                     disableGutters
                     secondaryAction={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                        <IconButton 
+                          edge="end" 
+                          color="primary" 
+                          onClick={() => openEditModal(t)}
+                          title="Editar transação"
+                          size="small"
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
                         <Switch
                           edge="end"
                           checked={t.status === 1}
@@ -470,8 +529,13 @@ const displayedTransactions = transactions.filter((t) => {
                           color="primary"
                           title={t.status === 1 ? "Marcar como pendente" : "Marcar como efetuada"}
                         />
-                        <IconButton edge="end" color="error" onClick={() => handleDelete(t.id)}>
-                          <DeleteOutline />
+                        <IconButton 
+                          edge="end" 
+                          color="error" 
+                          onClick={() => handleDelete(t.id)}
+                          size="small"
+                        >
+                          <DeleteOutline fontSize="small" />
                         </IconButton>
                       </Box>
                     }
@@ -672,6 +736,124 @@ const displayedTransactions = transactions.filter((t) => {
             </Button>
             <Button type="submit" variant="contained" disabled={isSubmitting}>
               {isSubmitting ? 'Salvando...' : 'Salvar Transação'}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
+
+      {/* Modal de Edição */}
+      <Dialog open={isEditModalOpen} onClose={closeEditModal} fullWidth maxWidth="sm">
+        <Box component="form" onSubmit={editHandleSubmit(onEditSubmit)}>
+          <DialogTitle>Editar Transação</DialogTitle>
+          <DialogContent dividers>
+            <TextField
+              label="Descrição"
+              fullWidth
+              margin="normal"
+              placeholder="Descrição da transação"
+              {...editRegister('descricao', {
+                required: 'Por favor, preencha a descrição',
+                minLength: {
+                  value: 3,
+                  message: 'A descrição deve ter pelo menos 3 caracteres'
+                }
+              })}
+              error={Boolean(editErrors.descricao)}
+              helperText={editErrors.descricao?.message}
+            />
+
+            <TextField
+              label="Valor"
+              type="number"
+              fullWidth
+              margin="normal"
+              inputProps={{ step: '0.01', min: '0.01' }}
+              {...editRegister('valor', {
+                required: 'Por favor, preencha o valor',
+                min: {
+                  value: 0.01,
+                  message: 'O valor deve ser maior que zero'
+                }
+              })}
+              error={Boolean(editErrors.valor)}
+              helperText={editErrors.valor?.message}
+            />
+
+            <TextField
+              label="Data"
+              type="date"
+              fullWidth
+              margin="normal"
+              InputLabelProps={{ shrink: true }}
+              {...editRegister('data', {
+                required: 'Por favor, selecione uma data'
+              })}
+              error={Boolean(editErrors.data)}
+              helperText={editErrors.data?.message}
+            />
+
+            <Controller
+              name="categoryId"
+              control={editControl}
+              rules={{ required: 'Selecione a categoria' }}
+              render={({ field, fieldState }) => (
+                <TextField
+                  {...field}
+                  select
+                  label="Categoria"
+                  fullWidth
+                  margin="normal"
+                  error={Boolean(fieldState.error)}
+                  helperText={fieldState.error?.message}
+                >
+                  {categories && categories.length > 0 ? (
+                    categories.map((c) => (
+                      <MenuItem key={c.id} value={c.id}>
+                        {c.name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled>Nenhuma categoria</MenuItem>
+                  )}
+                </TextField>
+              )}
+            />
+
+            <Controller
+              name="bankId"
+              control={editControl}
+              defaultValue={''}
+              render={({ field, fieldState }) => (
+                <TextField
+                  {...field}
+                  select
+                  label="Banco"
+                  fullWidth
+                  margin="normal"
+                  error={Boolean(fieldState.error)}
+                  helperText={fieldState.error?.message}
+                >
+                  {banks && banks.length > 0 ? (
+                    banks
+                    .filter(b => b.isActive)
+                    .map((b) => (
+                      <MenuItem key={b.id} value={b.id}>
+                        {b.name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled>Nenhum Banco cadastrado</MenuItem>
+                  )}
+                </TextField>
+              )}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeEditModal} color="inherit">
+              Cancelar
+            </Button>
+            <Button type="submit" variant="contained" disabled={editIsSubmitting}>
+              {editIsSubmitting ? 'Atualizando...' : 'Atualizar Transação'}
             </Button>
           </DialogActions>
         </Box>

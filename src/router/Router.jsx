@@ -4,6 +4,7 @@ import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Home from '../pages/Home';
 import Bank from '../pages/Bank';
+import Charts from '../pages/Charts';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
 function ProtectedRoute({ children }) {
@@ -67,6 +68,15 @@ export default function Router() {
             element={
               <ProtectedRoute>
                 <Bank />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/charts" 
+            element={
+              <ProtectedRoute>
+                <Charts />
               </ProtectedRoute>
             } 
           />

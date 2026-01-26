@@ -19,3 +19,6 @@ npm install --save-dev parcel
 npm install react-icons
 npm run build
 npm start
+
+# comando para instalar gráfico
+npm install recharts jspdf html2canvas

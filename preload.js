@@ -11,5 +11,6 @@ contextBridge.exposeInMainWorld('api', {
   deleteTransaction: (id,userEmail) => ipcRenderer.invoke('delete-transaction', {id,userEmail}),
   addBank: (bank) => ipcRenderer.invoke('addBank', bank),
   setBankStatus: (id) => ipcRenderer.invoke('setBankStatus', id),
-  updateTransactionStatus: (id, userEmail, status) => ipcRenderer.invoke('updateTransactionStatus', { id, userEmail, status })
+  updateTransactionStatus: (id, userEmail, status) => ipcRenderer.invoke('updateTransactionStatus', { id, userEmail, status }),
+  updateTransaction: (id, userEmail, updates) => ipcRenderer.invoke('updateTransaction', { id, userEmail, updates })
 });

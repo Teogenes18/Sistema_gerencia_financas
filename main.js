@@ -86,6 +86,17 @@ function registerIpcHandlers() {
       return { success: false, message: 'Erro ao atualizar status.' };
     }
   });
+
+  ipcMain.handle('updateTransaction', async (event, { id, userEmail, updates }) => {
+    try {
+      const { transactionController } = require('./src/server/controllers');
+      const result = await transactionController.updateTransaction(id, userEmail, updates);
+      return result;
+    } catch (error) {
+      console.error('Erro ao atualizar transação:', error);
+      return { success: false, message: 'Erro ao atualizar transação.' };
+    }
+  });
 }
 
 dbReady
