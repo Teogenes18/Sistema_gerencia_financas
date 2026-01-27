@@ -11,9 +11,13 @@ import {
   Paper,
   Stack,
   TextField,
-  Typography
+  Typography,
+  Divider
 } from '@mui/material';
-import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
+import { 
+  PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid
+} from 'recharts';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useAuth } from '../context/AuthContext';
@@ -67,7 +71,8 @@ export default function Charts() {
     }
   };
 
-  const chartData = useMemo(() => {
+  // Dados para o Gráfico de Pizza (Despesas por Categoria)
+  const pieChartData = useMemo(() => {
     const filtered = transactions.filter((t) => {
       const txDate = new Date(t.occurredOn);
       const start = new Date(startDate);
@@ -91,8 +96,40 @@ export default function Charts() {
   }, [transactions, startDate, endDate]);
 
   const totalExpenses = useMemo(() => {
-    return chartData.reduce((sum, item) => sum + item.value, 0);
-  }, [chartData]);
+    return pieChartData.reduce((sum, item) => sum + item.value, 0);
+  }, [pieChartData]);
+
+  // Dados para o Gráfico de Barras (Evolução Receita x Despesa)
+  const barChartData = useMemo(() => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    const filtered = transactions.filter((t) => {
+      const txDate = new Date(t.occurredOn);
+      return txDate >= start && txDate <= end && t.status === 1;
+    });
+
+    const grouped = {};
+    filtered.forEach(t => {
+      const date = t.occurredOn;
+      if (!grouped[date]) {
+        grouped[date] = { date, receita: 0, despesa: 0 };
+      }
+      if (t.transactionType === 'receita') {
+        grouped[date].receita += Number(t.amount);
+      } else {
+        grouped[date].despesa += Number(t.amount);
+      }
+    });
+
+    return Object.values(grouped)
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .map(item => ({
+        ...item,
+        receita: parseFloat(item.receita.toFixed(2)),
+        despesa: parseFloat(item.despesa.toFixed(2))
+      }));
+  }, [transactions, startDate, endDate]);
 
   const currencyFormatter = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -114,10 +151,12 @@ export default function Charts() {
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
     pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-    pdf.text(`Gastos por Categoria - ${startDate} a ${endDate}`, 10, imgHeight + 30);
-    pdf.text(`Total de Despesas: ${currencyFormatter.format(totalExpenses)}`, 10, imgHeight + 40);
     
-    pdf.save(`relatorio-gastos-${startDate}-${endDate}.pdf`);
+    const today = new Date().toLocaleDateString('pt-BR');
+    pdf.setFontSize(10);
+    pdf.text(`Relatório gerado em: ${today}`, 10, imgHeight + 20);
+    
+    pdf.save(`relatorio-graficos-${startDate}-${endDate}.pdf`);
   };
 
   return (
@@ -125,10 +164,10 @@ export default function Charts() {
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={4}>
         <Box>
           <Typography variant="h4" fontWeight={600}>
-            Gastos por Categoria
+            Painel de Gráficos
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Visualize e exporte relatórios de despesas
+            Visualize a evolução das suas finanças
           </Typography>
         </Box>
         <Button variant="text" startIcon={<ArrowBack />} onClick={() => navigate('/home')}>
@@ -156,7 +195,7 @@ export default function Charts() {
             variant="contained"
             startIcon={<FileDownload />}
             onClick={exportPDF}
-            disabled={chartData.length === 0}
+            disabled={pieChartData.length === 0 && barChartData.length === 0}
           >
             Exportar PDF
           </Button>
@@ -164,57 +203,111 @@ export default function Charts() {
       </Paper>
 
       <Paper elevation={2} sx={{ p: 3 }} id="chart-container">
-        {chartData.length > 0 ? (
-          <Box>
-            <Typography variant="h6" mb={2}>
-              Total de Despesas: {currencyFormatter.format(totalExpenses)}
-            </Typography>
-            <ResponsiveContainer width="100%" height={400}>
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, value }) => `${name}: ${currencyFormatter.format(value)}`}
-                  outerRadius={120}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => currencyFormatter.format(value)} />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-
-            <Box mt={4}>
-              <Typography variant="h6" mb={2}>
-                Detalhamento por Categoria
-              </Typography>
-              <Stack spacing={1}>
-                {chartData.map((item, index) => (
-                  <Box key={item.name} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Box sx={{ width: 16, height: 16, backgroundColor: COLORS[index % COLORS.length], borderRadius: '2px' }} />
-                      <Typography>{item.name}</Typography>
-                    </Box>
-                    <Typography fontWeight={600}>
-                      {currencyFormatter.format(item.value)}
-                      {` (${((item.value / totalExpenses) * 100).toFixed(1)}%)`}
-                    </Typography>
-                  </Box>
-                ))}
-              </Stack>
-            </Box>
-          </Box>
-        ) : (
-          <Typography color="text.secondary" textAlign="center">
-            Nenhuma despesa encontrada no período selecionado.
+        
+        {/* Gráfico de Barras: Evolução */}
+        <Box mb={6}>
+          <Typography variant="h6" mb={2}>
+            Comparativo Diário: Receitas vs Despesas
           </Typography>
-        )}
+          {barChartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart 
+                data={barChartData} 
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                // Adicionamos barGap para controlar o espaço entre as barras do mesmo grupo (opcional)
+                barGap={8} 
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis 
+                  dataKey="date" 
+                  tickFormatter={(val) => {
+                    const [y, m, d] = val.split('-');
+                    return `${d}/${m}`;
+                  }}
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip 
+                  formatter={(value) => currencyFormatter.format(value)}
+                  cursor={{ fill: 'transparent' }}
+                />
+                <Legend iconType="circle" />
+                <Bar 
+                  dataKey="receita" 
+                  fill="#2e7d32" 
+                  name="Receitas" 
+                  barSize={20} // Largura fixa da barra (mais fina)
+                  radius={[4, 4, 0, 0]} // Cantos arredondados no topo
+                />
+                <Bar 
+                  dataKey="despesa" 
+                  fill="#d32f2f" 
+                  name="Despesas" 
+                  barSize={20} // Largura fixa da barra (mais fina)
+                  radius={[4, 4, 0, 0]} // Cantos arredondados no topo
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <Typography color="text.secondary" textAlign="center">
+              Sem dados para exibir o gráfico de evolução neste período.
+            </Typography>
+          )}
+        </Box>
+
+        <Divider sx={{ my: 4 }} />
+
+        {/* Gráfico de Pizza: Categorias */}
+        <Box>
+          <Typography variant="h6" mb={2}>
+            Gastos por Categoria (Total: {currencyFormatter.format(totalExpenses)})
+          </Typography>
+          {pieChartData.length > 0 ? (
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center' }}>
+              <Box sx={{ flex: 1, width: '100%', height: 400 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={pieChartData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, value }) => `${name} (${((value / totalExpenses) * 100).toFixed(0)}%)`}
+                      outerRadius={130}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {pieChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => currencyFormatter.format(value)} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </Box>
+
+              <Box sx={{ flex: 1, px: 2 }}>
+                <Stack spacing={1}>
+                  {pieChartData.map((item, index) => (
+                    <Box key={item.name} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ width: 16, height: 16, backgroundColor: COLORS[index % COLORS.length], borderRadius: '2px' }} />
+                        <Typography>{item.name}</Typography>
+                      </Box>
+                      <Typography fontWeight={600}>
+                        {currencyFormatter.format(item.value)}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Stack>
+              </Box>
+            </Box>
+          ) : (
+            <Typography color="text.secondary" textAlign="center">
+              Nenhuma despesa encontrada no período selecionado.
+            </Typography>
+          )}
+        </Box>
       </Paper>
     </Container>
   );

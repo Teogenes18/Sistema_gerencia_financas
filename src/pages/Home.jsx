@@ -37,7 +37,8 @@ import {
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import logo from '../../assets/logo.png';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -315,56 +316,75 @@ const displayedTransactions = transactions.filter((t) => {
   };
 
   const handleExportPdf = () => {
-    const filteredTransactions = transactions.filter(t => {
-      const date = new Date(t.occurredOn);
-      const start = pdfStartDate ? new Date(pdfStartDate) : null;
-      const end = pdfEndDate ? new Date(pdfEndDate) : null;
-      if (start && date < start) return false;
-      if (end && date > end) return false;
-      return true;
-    }).sort((a, b) => new Date(a.occurredOn) - new Date(b.occurredOn));
-
-    const pdf = new jsPDF();
-    pdf.setFontSize(20);
-    pdf.text('Relatório de Transações', 20, 20);
-
-    pdf.setFontSize(12);
-    pdf.text(`Período: ${pdfStartDate || 'Todos'} a ${pdfEndDate}`, 20, 35);
-    pdf.text(`Total de transações: ${filteredTransactions.length}`, 20, 45);
-
-    let y = 60;
-    let balance = 0;
-
-    filteredTransactions.forEach(t => {
-      if (y > 270) {
-        pdf.addPage();
-        y = 20;
+    try {
+      // 1. Verificação de Segurança
+      if (typeof jsPDF === 'undefined' && typeof window.jspdf === 'undefined') {
+        throw new Error("A biblioteca jsPDF não foi carregada corretamente.");
       }
-      const amount = Number(t.amount) || 0;
-      const signal = t.transactionType === 'receita' ? 1 : -1;
-      balance += amount * signal;
 
-      const type = t.transactionType === 'receita' ? 'Receita' : 'Despesa';
-      const category = t.category ? t.category.name : 'Sem categoria';
-      const bank = t.bank ? t.bank.name : 'Sem banco';
+      // 2. Filtragem de Dados (Mesma lógica do CSV que já funciona)
+      const filteredTransactions = displayedTransactions.sort((a, b) => 
+        new Date(a.occurredOn) - new Date(b.occurredOn)
+      );
 
-      pdf.setFontSize(10);
-      pdf.text(`Data: ${t.occurredOn}`, 20, y);
-      pdf.text(`Descrição: ${t.description}`, 20, y + 5);
-      pdf.text(`Tipo: ${type}`, 20, y + 10);
-      pdf.text(`Valor: ${currencyFormatter.format(amount)}`, 20, y + 15);
-      pdf.text(`Categoria: ${category}`, 20, y + 20);
-      pdf.text(`Banco: ${bank}`, 20, y + 25);
-      pdf.text(`Saldo acumulado: ${currencyFormatter.format(balance)}`, 20, y + 30);
+      // 3. Setup do Documento
+      const doc = new jsPDF();
 
-      y += 40;
-    });
+      // Título
+      doc.setFontSize(18);
+      doc.text('Relatório Financeiro', 14, 20);
+      
+      doc.setFontSize(10);
+      doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 14, 28);
 
-    pdf.setFontSize(14);
-    pdf.text(`Saldo final no período: ${currencyFormatter.format(balance)}`, 20, y + 10);
+      // 4. Preparar linhas da tabela
+      const tableRows = filteredTransactions.map(t => {
+        const amount = Number(t.amount) || 0;
+        const isIncome = t.transactionType === 'receita';
+        return [
+          t.occurredOn.split('-').reverse().join('/'), // Data
+          t.description || '',                         // Descrição
+          t.category?.name || '',                      // Categoria
+          t.bank?.name || '',                          // Banco
+          isIncome ? 'Receita' : 'Despesa',            // Tipo
+          currencyFormatter.format(amount)             // Valor
+        ];
+      });
 
-    pdf.save(`transacoes-${pdfStartDate || 'inicio'}-${pdfEndDate}.pdf`);
-    setIsExportModalOpen(false);
+      // 5. Gerar Tabela (Verifica se o plugin existe)
+      if (doc.autoTable) {
+        doc.autoTable({
+          startY: 35,
+          head: [['Data', 'Descrição', 'Categoria', 'Banco', 'Tipo', 'Valor']],
+          body: tableRows,
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [41, 128, 185] }, // Azul padrão
+          didParseCell: function(data) {
+            // Pinta valores de vermelho/verde
+            if (data.section === 'body' && data.column.index === 5) {
+               const tipo = data.row.raw[4]; // Coluna 'Tipo'
+              if (tipo === 'Despesa') data.cell.styles.textColor = [200, 0, 0];
+              else data.cell.styles.textColor = [0, 150, 0];
+            }
+          }
+        });
+      } else {
+        // Fallback caso o autotable não esteja instalado
+        let yPos = 40;
+        tableRows.forEach(row => {
+          doc.text(row.join(' | '), 14, yPos);
+          yPos += 10;
+        });
+      }
+
+      // 6. Salvar
+      doc.save(`extrato_financeiro_${Date.now()}.pdf`);
+      setIsExportModalOpen(false);
+
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      alert(`Erro ao gerar PDF: ${error.message}\n\nVerifique o console (F12) para mais detalhes.`);
+    }
   };
 
   return (
