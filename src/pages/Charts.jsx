@@ -16,7 +16,8 @@ import {
 } from '@mui/material';
 import { 
   PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  LineChart, Line
 } from 'recharts';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -26,6 +27,19 @@ const COLORS = [
   '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
   '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384'
 ];
+
+const parseDateToLocal = (dateStr) => {
+  const [y, m, d] = (dateStr || '').split('-').map(Number);
+  if (!y || !m || !d) return null;
+  return new Date(y, m - 1, d);
+};
+
+const formatDate = (dateObj) => {
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 export default function Charts() {
   const { user } = useAuth();
@@ -131,6 +145,43 @@ export default function Charts() {
       }));
   }, [transactions, startDate, endDate]);
 
+  const lineChartData = useMemo(() => {
+    const start = parseDateToLocal(startDate);
+    const end = parseDateToLocal(endDate);
+
+    if (!start || !end || start > end) return [];
+
+    const validTx = transactions
+      .filter((t) => t.status === 1 && t.occurredOn)
+      .map((t) => ({
+        ...t,
+        txDate: parseDateToLocal(t.occurredOn)
+      }))
+      .filter((t) => t.txDate && t.txDate <= end)
+      .sort((a, b) => a.txDate - b.txDate);
+
+    const initialBalance = validTx
+      .filter((t) => t.txDate < start)
+      .reduce((acc, t) => acc + (t.transactionType === 'receita' ? Number(t.amount) : -Number(t.amount)), 0);
+
+    const changeByDate = {};
+    validTx.forEach((t) => {
+      if (t.txDate < start) return;
+      const key = formatDate(t.txDate);
+      changeByDate[key] = (changeByDate[key] || 0) + (t.transactionType === 'receita' ? Number(t.amount) : -Number(t.amount));
+    });
+
+    const data = [];
+    let running = initialBalance;
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const key = formatDate(d);
+      running += changeByDate[key] || 0;
+      data.push({ date: key, saldo: parseFloat(running.toFixed(2)) });
+    }
+
+    return data;
+  }, [transactions, startDate, endDate]);
+
   const currencyFormatter = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL'
@@ -153,8 +204,11 @@ export default function Charts() {
     pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
     
     const today = new Date().toLocaleDateString('pt-BR');
+    const periodStart = new Date(startDate).toLocaleDateString('pt-BR');
+    const periodEnd = new Date(endDate).toLocaleDateString('pt-BR');
     pdf.setFontSize(10);
-    pdf.text(`Relatório gerado em: ${today}`, 10, imgHeight + 20);
+    pdf.text(`Período analisado: ${periodStart} a ${periodEnd}`, 10, imgHeight + 20);
+    pdf.text(`Relatório gerado em: ${today}`, 10, imgHeight + 26);
     
     pdf.save(`relatorio-graficos-${startDate}-${endDate}.pdf`);
   };
@@ -251,6 +305,43 @@ export default function Charts() {
           ) : (
             <Typography color="text.secondary" textAlign="center">
               Sem dados para exibir o gráfico de evolução neste período.
+            </Typography>
+          )}
+        </Box>
+
+        <Box mb={6}>
+          <Typography variant="h6" mb={2}>
+            Saldo Diário Acumulado
+          </Typography>
+          {lineChartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={lineChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={(val) => {
+                    const [y, m, d] = val.split('-');
+                    return `${d}/${m}`;
+                  }}
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis tick={{ fontSize: 12 }} tickFormatter={(value) => currencyFormatter.format(value)} />
+                <Tooltip formatter={(value) => currencyFormatter.format(value)} cursor={{ stroke: '#1565c0' }} />
+                <Legend iconType="plainline" />
+                <Line
+                  type="monotone"
+                  dataKey="saldo"
+                  name="Saldo"
+                  stroke="#1565c0"
+                  strokeWidth={3}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 5 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <Typography color="text.secondary" textAlign="center">
+              Sem movimentações para calcular o saldo neste período.
             </Typography>
           )}
         </Box>
