@@ -653,6 +653,7 @@ const displayedTransactions = transactions.filter((t) => {
               const [ano = '', mes = '', dia = ''] = (t.occurredOn || '').split('-');
               const description = t.description?.trim() || 'Sem descrição';
               const categoryName = t.category?.name || 'Sem categoria';
+              const bankName = t.bank?.name || banks.find((b) => Number(b.id) === Number(t.bankId))?.name || 'Sem banco';
 
               return (
                 <Box key={t.id || index}>
@@ -707,6 +708,9 @@ const displayedTransactions = transactions.filter((t) => {
                           <Typography component="span" variant="body2" color="text.secondary" sx={{ display: 'block' }}>
                             Categoria: {categoryName}
                           </Typography>
+                          <Typography component="span" variant="body2" color="text.secondary" sx={{ display: 'block' }}>
+                            Banco: {bankName}
+                          </Typography>
                         </>
                       }
                     />
@@ -719,16 +723,6 @@ const displayedTransactions = transactions.filter((t) => {
             })}
           </List>
         )}
-
-        <Divider sx={{ my: 2 }} />
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="subtitle1">Soma</Typography>
-          <Chip
-            label={currencyFormatter.format(balance)}
-            color={balance >= 0 ? 'success' : 'error'}
-            sx={{ fontWeight: 600 }}
-          />
-        </Stack>
       </Paper>
 
       <Dialog open={isModalOpen} onClose={closeTransactionModal} fullWidth maxWidth="sm">
