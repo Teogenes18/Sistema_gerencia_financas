@@ -652,8 +652,9 @@ const displayedTransactions = transactions.filter((t) => {
               const amountColor = t.transactionType === 'receita' ? 'success.main' : 'error.main';
               const [ano = '', mes = '', dia = ''] = (t.occurredOn || '').split('-');
               const description = t.description?.trim() || 'Sem descrição';
+              
               const categoryName = t.category?.name || 'Sem categoria';
-              const bankName = t.bank?.name || banks.find((b) => Number(b.id) === Number(t.bankId))?.name || 'Sem banco';
+              const bankName = t.bank?.name || 'Sem banco'; 
 
               return (
                 <Box key={t.id || index}>
@@ -689,8 +690,7 @@ const displayedTransactions = transactions.filter((t) => {
                       </Box>
                     }
                   >
-
-                <Box sx={{ mr: 2, display: 'flex', alignItems: 'center' }} title={t.status === 1 ? "Efetuada" : "Pendente"}>
+                    <Box sx={{ mr: 2, display: 'flex', alignItems: 'center' }} title={t.status === 1 ? "Efetuada" : "Pendente"}>
                       {t.status === 1 ? (
                         <CheckCircle color="success" fontSize="small" />
                       ) : (
@@ -708,6 +708,7 @@ const displayedTransactions = transactions.filter((t) => {
                           <Typography component="span" variant="body2" color="text.secondary" sx={{ display: 'block' }}>
                             Categoria: {categoryName}
                           </Typography>
+                          {/* Nova linha para exibir o Banco */}
                           <Typography component="span" variant="body2" color="text.secondary" sx={{ display: 'block' }}>
                             Banco: {bankName}
                           </Typography>
