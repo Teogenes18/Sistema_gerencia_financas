@@ -23,6 +23,7 @@ import {
 } from '@mui/material';
 import { ArrowBack, Savings, Add } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+import React from 'react';
 
 export default function Bank() {
   const navigate = useNavigate();
@@ -172,8 +173,12 @@ export default function Bank() {
             const isPositive = currentBalance >= 0;
 
             return (
-              <div key={bank.id}>
-                {index > 0 && <Divider />}
+              /* CORREÇÃO AQUI: Trocamos div por React.Fragment */
+              <React.Fragment key={bank.id}>
+                
+                {/* O Divider agora é um 'li' para respeitar a estrutura da lista */}
+                {index > 0 && <Divider component="li" />}
+                
                 <ListItem
                   sx={{ py: 2 }}
                   secondaryAction={
@@ -216,7 +221,7 @@ export default function Bank() {
                     }
                   />
                 </ListItem>
-              </div>
+              </React.Fragment>
             );
           })}
           {banks.length === 0 && (

@@ -39,6 +39,7 @@ import { useAuth } from '../context/AuthContext';
 import logo from '../../assets/logo.png';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import React from 'react';
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -646,19 +647,21 @@ const displayedTransactions = transactions.filter((t) => {
             overflowX: 'hidden'
           }} disablePadding>
             {displayedTransactions.map((t, index) => {
+
               const amount = Number(t.amount) || 0;
               const formattedAmount = currencyFormatter.format(Math.abs(amount));
               const prefix = t.transactionType === 'receita' ? '+' : '-';
               const amountColor = t.transactionType === 'receita' ? 'success.main' : 'error.main';
               const [ano = '', mes = '', dia = ''] = (t.occurredOn || '').split('-');
               const description = t.description?.trim() || 'Sem descrição';
-              
               const categoryName = t.category?.name || 'Sem categoria';
-              const bankName = t.bank?.name || 'Sem banco'; 
+              const bankName = t.bank?.name || 'Sem banco';
 
               return (
-                <Box key={t.id || index}>
-                  {index !== 0 && <Divider sx={{ my: 1 }} />}
+                <React.Fragment key={t.id || index}>
+                  
+                  {index !== 0 && <Divider component="li" sx={{ my: 1 }} />}
+                  
                   <ListItem
                     disableGutters
                     secondaryAction={
@@ -708,7 +711,6 @@ const displayedTransactions = transactions.filter((t) => {
                           <Typography component="span" variant="body2" color="text.secondary" sx={{ display: 'block' }}>
                             Categoria: {categoryName}
                           </Typography>
-                          {/* Nova linha para exibir o Banco */}
                           <Typography component="span" variant="body2" color="text.secondary" sx={{ display: 'block' }}>
                             Banco: {bankName}
                           </Typography>
@@ -719,7 +721,7 @@ const displayedTransactions = transactions.filter((t) => {
                       {`${prefix} ${formattedAmount}`}
                     </Typography>
                   </ListItem>
-                </Box>
+                </React.Fragment>
               );
             })}
           </List>
