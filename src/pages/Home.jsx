@@ -318,59 +318,51 @@ const displayedTransactions = transactions.filter((t) => {
 
   const handleExportPdf = () => {
     try {
-      // 1. Verificação de Segurança
       if (typeof jsPDF === 'undefined' && typeof window.jspdf === 'undefined') {
         throw new Error("A biblioteca jsPDF não foi carregada corretamente.");
       }
 
-      // 2. Filtragem de Dados (Mesma lógica do CSV que já funciona)
       const filteredTransactions = displayedTransactions.sort((a, b) => 
         new Date(a.occurredOn) - new Date(b.occurredOn)
       );
 
-      // 3. Setup do Documento
       const doc = new jsPDF();
 
-      // Título
       doc.setFontSize(18);
       doc.text('Relatório Financeiro', 14, 20);
       
       doc.setFontSize(10);
       doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 14, 28);
 
-      // 4. Preparar linhas da tabela
       const tableRows = filteredTransactions.map(t => {
         const amount = Number(t.amount) || 0;
         const isIncome = t.transactionType === 'receita';
         return [
-          t.occurredOn.split('-').reverse().join('/'), // Data
-          t.description || '',                         // Descrição
-          t.category?.name || '',                      // Categoria
-          t.bank?.name || '',                          // Banco
-          isIncome ? 'Receita' : 'Despesa',            // Tipo
-          currencyFormatter.format(amount)             // Valor
+          t.occurredOn.split('-').reverse().join('/'),
+          t.description || '',
+          t.category?.name || '',
+          t.bank?.name || '',
+          isIncome ? 'Receita' : 'Despesa',
+          currencyFormatter.format(amount)
         ];
       });
 
-      // 5. Gerar Tabela (Verifica se o plugin existe)
       if (doc.autoTable) {
         doc.autoTable({
           startY: 35,
           head: [['Data', 'Descrição', 'Categoria', 'Banco', 'Tipo', 'Valor']],
           body: tableRows,
           styles: { fontSize: 8 },
-          headStyles: { fillColor: [41, 128, 185] }, // Azul padrão
+          headStyles: { fillColor: [41, 128, 185] },
           didParseCell: function(data) {
-            // Pinta valores de vermelho/verde
             if (data.section === 'body' && data.column.index === 5) {
-               const tipo = data.row.raw[4]; // Coluna 'Tipo'
+               const tipo = data.row.raw[4];
               if (tipo === 'Despesa') data.cell.styles.textColor = [200, 0, 0];
               else data.cell.styles.textColor = [0, 150, 0];
             }
           }
         });
       } else {
-        // Fallback caso o autotable não esteja instalado
         let yPos = 40;
         tableRows.forEach(row => {
           doc.text(row.join(' | '), 14, yPos);
@@ -378,7 +370,6 @@ const displayedTransactions = transactions.filter((t) => {
         });
       }
 
-      // 6. Salvar
       doc.save(`extrato_financeiro_${Date.now()}.pdf`);
       setIsExportModalOpen(false);
 
@@ -839,6 +830,8 @@ const displayedTransactions = transactions.filter((t) => {
                       <MenuItem value={4}>Saúde</MenuItem>
                       <MenuItem value={5}>Transporte</MenuItem>
                       <MenuItem value={6}>Lazer</MenuItem>
+                      <MenuItem value={7}>Aluguel</MenuItem>
+                      <MenuItem value={8}>Investimento</MenuItem>
                     </>
                   )}
                 </TextField>
@@ -886,7 +879,6 @@ const displayedTransactions = transactions.filter((t) => {
         </Box>
       </Dialog>
 
-      {/* Modal de Edição */}
       <Dialog open={isEditModalOpen} onClose={closeEditModal} fullWidth maxWidth="sm">
         <Box component="form" onSubmit={editHandleSubmit(onEditSubmit)}>
           <DialogTitle>Editar Transação</DialogTitle>

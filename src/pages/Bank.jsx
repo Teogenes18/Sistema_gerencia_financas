@@ -173,10 +173,8 @@ export default function Bank() {
             const isPositive = currentBalance >= 0;
 
             return (
-              /* CORREÇÃO AQUI: Trocamos div por React.Fragment */
               <React.Fragment key={bank.id}>
                 
-                {/* O Divider agora é um 'li' para respeitar a estrutura da lista */}
                 {index > 0 && <Divider component="li" />}
                 
                 <ListItem

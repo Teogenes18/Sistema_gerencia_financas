@@ -81,7 +81,6 @@ export default function Router() {
             } 
           />
           
-          {/* Fallback route */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>
