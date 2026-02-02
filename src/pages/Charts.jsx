@@ -26,7 +26,10 @@ import {
   Tooltip,
   Legend,
   LineChart,
-  Line
+  Line,
+  PieChart,
+  Pie,
+  Cell
 } from 'recharts';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -97,25 +100,27 @@ export default function Charts() {
   };
 
   const pieChartData = useMemo(() => {
+    if (!startDate || !endDate) return [];
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (isNaN(start.getTime()) || isNaN(end.getTime()) || start > end) return [];
+
     const filtered = transactions.filter((t) => {
       const txDate = new Date(t.occurredOn);
-      const start = new Date(startDate);
-      const end = new Date(endDate);
+      if (isNaN(txDate.getTime())) return false;
       return txDate >= start && txDate <= end && t.transactionType === 'despesa' && t.status === 1;
     });
 
     const byCategory = {};
     filtered.forEach((t) => {
       const catName = t.category?.name || 'Sem categoria';
-      if (!byCategory[catName]) {
-        byCategory[catName] = 0;
-      }
-      byCategory[catName] += Number(t.amount) || 0;
+      const amt = Number(t.amount) || 0;
+      byCategory[catName] = (byCategory[catName] || 0) + amt;
     });
 
     return Object.entries(byCategory).map(([name, value]) => ({
       name,
-      value: parseFloat(value.toFixed(2))
+      value: parseFloat((Number(value) || 0).toFixed(2))
     }));
   }, [transactions, startDate, endDate]);
 
@@ -165,7 +170,6 @@ export default function Charts() {
       .filter((t) => t.txDate && t.txDate <= end)
       .sort((a, b) => a.txDate - b.txDate);
 
-    // valores acumulados antes do período
     let cumulReceita = validTx
       .filter((t) => t.txDate < start && t.transactionType === 'receita')
       .reduce((s, t) => s + Number(t.amount), 0);
@@ -235,7 +239,6 @@ export default function Charts() {
 
   function getMinStartDate() {
     const today = new Date();
-    // Subtrai 12 meses
     const d = new Date(today.getFullYear(), today.getMonth() - 12, today.getDate());
     return formatDate(d);
   }
@@ -250,9 +253,11 @@ export default function Charts() {
     if (value < min) {
       setStartDate(min);
       setStartDateWarning(`A data inicial não pode ser anterior a 12 meses a partir de hoje. Ajustada para ${min}.`);
-      // limpa a mensagem após alguns segundos
       setTimeout(() => setStartDateWarning(''), 4000);
     } else {
+      if (endDate && value > endDate) {
+        setEndDate(value);
+      }
       setStartDate(value);
       setStartDateWarning('');
     }
