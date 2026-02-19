@@ -1,27 +1,19 @@
-# Instala o Electron, Sequelize, sqlite3 e outras dependências
-npm install
+# Sistema de Gerenciamento de Finanças 💰
 
-# Recompilar módulos nativos do Electron (necessário para sqlite3):
-npx electron-rebuild -f -w sqlite3
+Bem-vindo ao **Sistema de Gerenciamento de Finanças**, uma aplicação desktop desenvolvida para ajudar você a controlar suas receitas e despesas de forma intuitiva, gerar gráficos dinâmicos e exportar relatórios.
 
-# Resetar o banco local (finance.sqlite)
-# Basta remover o arquivo finance.sqlite na raiz do projeto.
-# Ao iniciar o app novamente, o Sequelize recriará todas as tabelas automaticamente.
+## 🚀 Tecnologias Utilizadas
+Este sistema foi construído com uma arquitetura moderna baseada em tecnologias web para desktop:
+- **Electron:** Para empacotar a aplicação como um software desktop.
+- **React & React Router:** Para a construção da interface de usuário e navegação (Single Page Application).
+- **Sequelize & SQLite3:** Para o banco de dados local (armazenamento offline seguro).
+- **Recharts:** Para a geração de gráficos financeiros interativos.
+- **jsPDF & html2canvas:** Para exportação de relatórios em formato PDF.
+- **PapaParse:** Para a importação e leitura de arquivos de planilhas (CSV).
+- **Parcel:** Como empacotador de módulos (bundler).
 
-# Iniciar o app
-npm start
+## 📚 Documentação
+Para manter o projeto organizado, dividimos nosso manual em arquivos específicos. Consulte os links abaixo para saber como instalar e utilizar o software:
 
-# comandos para instalar o react, parcel e os icones
-npm install react react-dom
-npm install react-router-dom
-npm install --save-dev parcel-reporter-static-files-copy
-npm install --save-dev parcel
-npm install react-icons
-npm run build
-npm start
-
-# comando para instalar gráfico
-npm install recharts jspdf html2canvas
-
-# bibloteca para ler CSV
-npm install papaparse
+- [Guia de Instalação e Configuração (INSTALL.md)](INSTALL.md)
+- [Manual de Uso do Sistema (USAGE.md)](USAGE.md)
