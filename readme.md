@@ -15,5 +15,5 @@ Este sistema foi construído com uma arquitetura moderna baseada em tecnologias 
 ## 📚 Documentação
 Para manter o projeto organizado, dividimos nosso manual em arquivos específicos. Consulte os links abaixo para saber como instalar e utilizar o software:
 
-- [Guia de Instalação e Configuração (INSTALL.md)](INSTALL.md)
-- [Manual de Uso do Sistema (USAGE.md)](USAGE.md)
+- [Guia de Instalação e Configuração (INSTALL.md)]
+- [Manual de Uso do Sistema (USAGE.md)]
