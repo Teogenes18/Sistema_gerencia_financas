@@ -12,5 +12,7 @@ contextBridge.exposeInMainWorld('api', {
   addBank: (bank) => ipcRenderer.invoke('addBank', bank),
   setBankStatus: (id) => ipcRenderer.invoke('setBankStatus', id),
   updateTransactionStatus: (id, userEmail, status) => ipcRenderer.invoke('updateTransactionStatus', { id, userEmail, status }),
-  updateTransaction: (id, userEmail, updates) => ipcRenderer.invoke('updateTransaction', { id, userEmail, updates })
+  updateTransaction: (id, userEmail, updates) => ipcRenderer.invoke('updateTransaction', { id, userEmail, updates }),
+  validateImportFile: (transactions) => ipcRenderer.invoke('validateImportFile', transactions),
+  importTransactions: (userEmail, transactions, bankId) => ipcRenderer.invoke('importTransactions', { userEmail, transactions, bankId })
 });
