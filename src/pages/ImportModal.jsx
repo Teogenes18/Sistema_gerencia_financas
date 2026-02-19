@@ -44,7 +44,6 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
   };
 
   const mapearColunas = (row) => {
-    // Procurar pelas colunas em português ou inglês
     const findColumn = (aliases) => {
       return Object.keys(row).find(col => 
         aliases.includes(limparTexto(col))
@@ -99,7 +98,6 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
             return;
           }
 
-          // Mapear colunas automaticamente
           const dadosMapeados = results.data
             .map(row => {
               const mapeado = mapearColunas(row);
@@ -209,7 +207,6 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
           </Alert>
         )}
 
-        {/* PASSO 0: Selecionar Arquivo */}
         {step === 0 && (
           <Box sx={{ textAlign: 'center', py: 4 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>
@@ -247,7 +244,6 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
           </Box>
         )}
 
-        {/* PASSO 1: Revisar Dados */}
         {step === 1 && parsedData.length > 0 && (
           <Box>
             <Typography variant="subtitle2" sx={{ mb: 2 }}>
@@ -282,7 +278,6 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
           </Box>
         )}
 
-        {/* PASSO 2: Selecionar Banco */}
         {step === 2 && (
           <Box>
             <Typography variant="subtitle2" sx={{ mb: 2 }}>
@@ -309,7 +304,6 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
           </Box>
         )}
 
-        {/* PASSO 3: Confirmar */}
         {step === 3 && (
           <Box>
             <Typography variant="subtitle2" sx={{ mb: 2 }}>

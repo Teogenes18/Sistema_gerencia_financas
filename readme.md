@@ -22,3 +22,6 @@ npm start
 
 # comando para instalar gráfico
 npm install recharts jspdf html2canvas
+
+# bibloteca para ler CSV
+npm install papaparse

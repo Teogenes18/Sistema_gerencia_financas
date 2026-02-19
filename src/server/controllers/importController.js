@@ -5,7 +5,6 @@ async function validateImportFile(transactions) {
     return { valid: false, message: 'Arquivo vazio ou inválido.' };
   }
 
-  // Validar apenas os campos obrigatórios mapeados
   const required = ['amount', 'description', 'transactionType', 'occurredOn'];
   const sample = transactions[0];
 
@@ -33,7 +32,6 @@ async function importTransactions(userEmail, transactions, selectedBankId) {
   };
 
   try {
-    // Validar banco se fornecido
     let bankId = selectedBankId;
     if (bankId) {
       const bank = await Bank.findByPk(bankId);
@@ -42,19 +40,16 @@ async function importTransactions(userEmail, transactions, selectedBankId) {
       }
     }
 
-    // Processar cada transação
     for (let i = 0; i < transactions.length; i++) {
       try {
         const tx = transactions[i];
 
-        // Validações básicas
         if (!tx.amount || !tx.description || !tx.transactionType || !tx.occurredOn) {
           results.errors.push(`Linha ${i + 1}: Campos obrigatórios ausentes`);
           results.failed++;
           continue;
         }
 
-        // Normalizar tipo de transação
         const tipo = String(tx.transactionType).toLowerCase().trim();
         let tipoValido = 'despesa';
         if (['receita', 'income', 'entrada', 'renda'].includes(tipo)) {
@@ -75,7 +70,6 @@ async function importTransactions(userEmail, transactions, selectedBankId) {
           continue;
         }
 
-        // Validar data
         const dataRegex = /^\d{4}-\d{2}-\d{2}$/;
         if (!dataRegex.test(tx.occurredOn)) {
           results.errors.push(`Linha ${i + 1}: Data em formato inválido (use YYYY-MM-DD)`);
@@ -83,10 +77,8 @@ async function importTransactions(userEmail, transactions, selectedBankId) {
           continue;
         }
 
-        // Buscar ou usar categoria padrão
         let categoryId = tx.categoryId;
         if (!categoryId) {
-          // Usar categoria padrão (Salário para receita, Alimentação para despesa)
           const defaultCat = tipoValido === 'receita' ? 1 : 3;
           categoryId = defaultCat;
         } else {
@@ -98,7 +90,6 @@ async function importTransactions(userEmail, transactions, selectedBankId) {
           }
         }
 
-        // Criar transação
         await Transaction.create({
           transactionType: tipoValido,
           amount: amount,
