@@ -27,6 +27,7 @@
     "html2canvas": "^1.4.1",
     "jspdf": "^4.1.0",
     "jspdf-autotable": "^5.0.7",
+    "papaparse": "^5.5.3",
     "react-hook-form": "^7.66.0",
     "react-router-dom": "^6.30.2",
     "recharts": "^3.7.0",

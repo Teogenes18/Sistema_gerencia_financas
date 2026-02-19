@@ -97,6 +97,26 @@ function registerIpcHandlers() {
       return { success: false, message: 'Erro ao atualizar transação.' };
     }
   });
+
+  ipcMain.handle('validateImportFile', async (event, transactions) => {
+    try {
+      const { importController } = require('./src/server/controllers');
+      return importController.validateImportFile(transactions);
+    } catch (error) {
+      console.error('Erro ao validar arquivo:', error);
+      return { success: false, message: 'Erro ao validar arquivo.' };
+    }
+  });
+
+  ipcMain.handle('importTransactions', async (event, { userEmail, transactions, bankId }) => {
+    try {
+      const { importController } = require('./src/server/controllers');
+      return importController.importTransactions(userEmail, transactions, bankId);
+    } catch (error) {
+      console.error('Erro ao importar transações:', error);
+      return { success: false, message: 'Erro ao importar transações.' };
+    }
+  });
 }
 
 dbReady

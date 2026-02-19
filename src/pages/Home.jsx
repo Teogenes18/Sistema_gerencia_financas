@@ -40,6 +40,7 @@ import logo from '../../assets/logo.png';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import React from 'react';
+import ImportModal from '../pages/ImportModal';
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -53,6 +54,7 @@ export default function Home() {
   const [filterCategoryId, setFilterCategoryId] = useState(null);
   const [filterBankId, setFilterBankId] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const getTodayDate = () => {
     const today = new Date();
@@ -995,6 +997,22 @@ const displayedTransactions = transactions.filter((t) => {
           </DialogActions>
         </Box>
       </Dialog>
+
+      <Button
+        variant="outlined"
+        startIcon={<FileDownload />}
+        onClick={() => setIsImportModalOpen(true)}
+      >
+        Importar
+      </Button>
+
+      <ImportModal
+        open={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        banks={banks}
+        userEmail={user.id}
+        onImportSuccess={loadTransactions}
+      />
     </Container>
   );
 }
