@@ -11,7 +11,8 @@ import {
   AccessTime,
   Edit as EditIcon,
   BarChart as BarChartIcon,
-  FileDownload
+  FileDownload,
+  FileUpload
 } from '@mui/icons-material';
 import {
   Avatar,
@@ -473,6 +474,13 @@ const displayedTransactions = transactions.filter((t) => {
               onClick={() => setIsExportModalOpen(true)}
             >
               Exportar
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<FileUpload />}
+              onClick={() => setIsImportModalOpen(true)}
+            >
+              Importar
             </Button>
             {filterBankId != null && (
               <Chip
@@ -997,14 +1005,6 @@ const displayedTransactions = transactions.filter((t) => {
           </DialogActions>
         </Box>
       </Dialog>
-
-      <Button
-        variant="outlined"
-        startIcon={<FileDownload />}
-        onClick={() => setIsImportModalOpen(true)}
-      >
-        Importar
-      </Button>
 
       <ImportModal
         open={isImportModalOpen}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -35,8 +35,24 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
   const [messageSeverity, setMessageSeverity] = useState('info');
   const [isLoading, setIsLoading] = useState(false);
   const [importResults, setImportResults] = useState(null);
+  const [categories, setCategories] = useState([]);
 
-  const steps = ['Selecionar Arquivo', 'Revisar Dados', 'Selecionar Banco', 'Confirmar'];
+  const steps = ['Selecionar Arquivo', 'Revisar Dados', 'Conciliação', 'Selecionar Banco', 'Confirmar'];
+
+  useEffect(() => {
+    if (!open) return;
+
+    const loadCategories = async () => {
+      try {
+        const cats = await window.api.listCategories();
+        setCategories(cats || []);
+      } catch (error) {
+        console.error('Erro ao carregar categorias:', error);
+      }
+    };
+
+    loadCategories();
+  }, [open]);
 
   const limparTexto = (texto) => {
     if (!texto) return '';
@@ -72,6 +88,32 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
     return t;
   };
 
+  const parseCategoryId = (value) => {
+    if (value === null || value === undefined || value === '') return '';
+    const numberValue = Number(value);
+    return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : '';
+  };
+
+  const isRowImportable = (row) => {
+    return Boolean(
+      row.amount &&
+      row.transactionType &&
+      row.occurredOn &&
+      String(row.description || '').trim() &&
+      parseCategoryId(row.categoryId)
+    );
+  };
+
+  const pendingRows = useMemo(
+    () => parsedData.filter((row) => !isRowImportable(row)),
+    [parsedData]
+  );
+
+  const importableRowsCount = useMemo(
+    () => parsedData.filter((row) => isRowImportable(row)).length,
+    [parsedData]
+  );
+
   const handleFileSelect = (event) => {
     const selectedFile = event.target.files?.[0];
     if (!selectedFile) return;
@@ -103,29 +145,32 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
               const mapeado = mapearColunas(row);
               return {
                 amount: mapeado.amount,
-                description: mapeado.description,
+                description: (mapeado.description || '').trim(),
                 transactionType: normalizarTipo(mapeado.transactionType),
                 occurredOn: mapeado.occurredOn,
-                categoryId: mapeado.categoryId
+                categoryId: parseCategoryId(mapeado.categoryId)
               };
             })
-            .filter(row => row.amount && row.description && row.transactionType && row.occurredOn);
+            .filter(row => row.amount && row.transactionType && row.occurredOn);
 
           if (dadosMapeados.length === 0) {
             setMessage(
               '❌ Nenhuma linha válida encontrada.\n\n' +
               'O arquivo deve conter as colunas:\n' +
               '• Valor (amount, valor)\n' +
-              '• Descrição (description, descricao)\n' +
               '• Tipo (transactionType, tipo) - "receita" ou "despesa"\n' +
-              '• Data (occurredOn, data) - formato YYYY-MM-DD'
+              '• Data (occurredOn, data) - formato YYYY-MM-DD\n\n' +
+              'Descrição e categoria podem vir vazias para conciliação antes de importar.'
             );
             setMessageSeverity('error');
             return;
           }
 
           setParsedData(dadosMapeados);
-          setMessage(`✅ ${dadosMapeados.length} transações encontradas no arquivo.`);
+          setMessage(
+            `✅ ${dadosMapeados.length} transações encontradas no arquivo. ` +
+            `${dadosMapeados.filter((row) => !isRowImportable(row)).length} pendentes de conciliação.`
+          );
           setMessageSeverity('success');
           setStep(1);
         } catch (error) {
@@ -144,7 +189,23 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
     if (step === 1) {
       setStep(2);
     } else if (step === 2) {
+      const currentPending = pendingRows.length;
+      const currentImportable = importableRowsCount;
+
+      if (currentPending > 0) {
+        setMessage(
+          `⚠️ ${currentPending} transação(ões) pendentes de conciliação. ` +
+          `${currentImportable} pronta(s) para importação.`
+        );
+        setMessageSeverity('warning');
+      } else {
+        setMessage(`✅ Todas as transações foram conciliadas. ${currentImportable} pronta(s) para importação.`);
+        setMessageSeverity('success');
+      }
+
       setStep(3);
+    } else if (step === 3) {
+      setStep(4);
     }
   };
 
@@ -153,11 +214,25 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
   };
 
   const handleImport = async () => {
+    const rowsToImport = parsedData
+      .filter((row) => isRowImportable(row))
+      .map((row) => ({
+        ...row,
+        description: String(row.description).trim(),
+        categoryId: Number(row.categoryId)
+      }));
+
+    if (rowsToImport.length === 0) {
+      setMessage('❌ Nenhuma transação conciliada para importar. Preencha descrição e categoria na etapa de conciliação.');
+      setMessageSeverity('error');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const result = await window.api.importTransactions(
         userEmail,
-        parsedData,
+        rowsToImport,
         selectedBankId || null
       );
 
@@ -166,10 +241,18 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
       setMessageSeverity(result.success ? 'success' : 'error');
 
       if (result.success) {
+        const skipped = parsedData.length - rowsToImport.length;
+        if (skipped > 0) {
+          setMessage(
+            `${result.message}\n⚠️ ${skipped} transação(ões) não foram importadas por falta de conciliação.`
+          );
+          setMessageSeverity('warning');
+        }
+
         setTimeout(() => {
           onImportSuccess?.();
           handleClose();
-        }, 2000);
+        }, 1500);
       }
     } catch (error) {
       setMessage('❌ Erro ao importar: ' + error.message);
@@ -187,6 +270,18 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
     setMessage('');
     setImportResults(null);
     onClose();
+  };
+
+  const handleConciliationFieldChange = (index, field, value) => {
+    setParsedData((prev) =>
+      prev.map((row, rowIndex) => {
+        if (rowIndex !== index) return row;
+        if (field === 'categoryId') {
+          return { ...row, categoryId: parseCategoryId(value) };
+        }
+        return { ...row, [field]: value };
+      })
+    );
   };
 
   return (
@@ -263,7 +358,7 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
                   {parsedData.slice(0, 5).map((row, idx) => (
                     <TableRow key={idx}>
                       <TableCell>{row.occurredOn}</TableCell>
-                      <TableCell>{row.description}</TableCell>
+                      <TableCell>{row.description || '—'}</TableCell>
                       <TableCell>
                         <strong style={{ color: row.transactionType === 'receita' ? '#2e7d32' : '#d32f2f' }}>
                           {row.transactionType === 'receita' ? '📈 Receita' : '📉 Despesa'}
@@ -279,6 +374,70 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
         )}
 
         {step === 2 && (
+          <Box>
+            <Typography variant="subtitle2" sx={{ mb: 2 }}>
+              🧩 Conciliação de pendências
+            </Typography>
+            {pendingRows.length === 0 ? (
+              <Alert severity="success" sx={{ mb: 2 }}>
+                Todas as transações já estão conciliadas. Você ainda pode editar descrição e categoria antes de prosseguir.
+              </Alert>
+            ) : (
+              <Alert severity="warning" sx={{ mb: 2 }}>
+                {pendingRows.length} transação(ões) com descrição ou categoria faltando. Só as conciliadas serão importadas.
+              </Alert>
+            )}
+            <TableContainer component={Paper} variant="outlined">
+              <Table size="small">
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                    <TableCell><strong>Data</strong></TableCell>
+                    <TableCell><strong>Tipo</strong></TableCell>
+                    <TableCell align="right"><strong>Valor</strong></TableCell>
+                    <TableCell><strong>Descrição</strong></TableCell>
+                    <TableCell><strong>Categoria</strong></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {parsedData.map((row, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell>{row.occurredOn}</TableCell>
+                      <TableCell>{row.transactionType === 'receita' ? '📈 Receita' : '📉 Despesa'}</TableCell>
+                      <TableCell align="right">{row.amount}</TableCell>
+                      <TableCell sx={{ minWidth: 220 }}>
+                        <TextField
+                          size="small"
+                          fullWidth
+                          value={row.description || ''}
+                          onChange={(e) => handleConciliationFieldChange(idx, 'description', e.target.value)}
+                          placeholder="Descrição obrigatória"
+                        />
+                      </TableCell>
+                      <TableCell sx={{ minWidth: 220 }}>
+                        <TextField
+                          size="small"
+                          select
+                          fullWidth
+                          value={row.categoryId || ''}
+                          onChange={(e) => handleConciliationFieldChange(idx, 'categoryId', e.target.value)}
+                        >
+                          <MenuItem value="">Selecione uma categoria</MenuItem>
+                          {categories.map((category) => (
+                            <MenuItem key={category.id} value={category.id}>
+                              {category.name}
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        )}
+
+        {step === 3 && (
           <Box>
             <Typography variant="subtitle2" sx={{ mb: 2 }}>
               🏦 Selecione um banco para vincular as transações:
@@ -304,7 +463,7 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
           </Box>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <Box>
             <Typography variant="subtitle2" sx={{ mb: 2 }}>
               ✓ Resumo da importação:
@@ -315,7 +474,13 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
                   📄 <strong>Arquivo:</strong> {file?.name}
                 </Typography>
                 <Typography variant="body2">
-                  📊 <strong>Transações:</strong> {parsedData.length}
+                  📊 <strong>Total no arquivo:</strong> {parsedData.length}
+                </Typography>
+                <Typography variant="body2">
+                  ✅ <strong>Prontas para importar:</strong> {importableRowsCount}
+                </Typography>
+                <Typography variant="body2">
+                  ⚠️ <strong>Não conciliadas (não serão importadas):</strong> {parsedData.length - importableRowsCount}
                 </Typography>
                 <Typography variant="body2">
                   🏦 <strong>Banco:</strong> {selectedBankId ? banks?.find(b => b.id === parseInt(selectedBankId))?.name : 'Nenhum'}
@@ -330,24 +495,25 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
             </Stack>
           </Box>
         )}
+
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>
-          {step === 3 && importResults ? 'Fechar' : 'Cancelar'}
+          {step === 4 && importResults ? 'Fechar' : 'Cancelar'}
         </Button>
-        {step > 0 && step < 3 && (
+        {step > 0 && step < 4 && (
           <Button onClick={handleBack}>Voltar</Button>
         )}
-        {step < 3 && (
+        {step < 4 && (
           <Button onClick={handleNext} variant="contained" disabled={step === 0 && !file}>
             Próximo
           </Button>
         )}
-        {step === 3 && (
+        {step === 4 && (
           <Button 
             onClick={handleImport} 
             variant="contained" 
-            disabled={isLoading}
+            disabled={isLoading || importableRowsCount === 0}
           >
             {isLoading ? '⏳ Importando...' : '✓ Importar'}
           </Button>

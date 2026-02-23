@@ -1,0 +1,6 @@
+amount,description,transactionType,occurredOn,categoryId,status
+3500.00,Salário mensal,receita,2026-02-01,,1
+45.90,Almoço no trabalho,despesa,2026-02-03,,1
+120.50,,income,2026-02-05,,1
+89.99,Internet residencial,expense,2026-02-08,,1
+15.00,Café com cliente,saída,2026-02-10,,1

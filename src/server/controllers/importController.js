@@ -5,7 +5,7 @@ async function validateImportFile(transactions) {
     return { valid: false, message: 'Arquivo vazio ou inválido.' };
   }
 
-  const required = ['amount', 'description', 'transactionType', 'occurredOn'];
+  const required = ['amount', 'description', 'transactionType', 'occurredOn', 'categoryId'];
   const sample = transactions[0];
 
   for (const field of required) {
@@ -44,7 +44,7 @@ async function importTransactions(userEmail, transactions, selectedBankId) {
       try {
         const tx = transactions[i];
 
-        if (!tx.amount || !tx.description || !tx.transactionType || !tx.occurredOn) {
+        if (!tx.amount || !tx.description || !tx.transactionType || !tx.occurredOn || !tx.categoryId) {
           results.errors.push(`Linha ${i + 1}: Campos obrigatórios ausentes`);
           results.failed++;
           continue;
@@ -77,28 +77,36 @@ async function importTransactions(userEmail, transactions, selectedBankId) {
           continue;
         }
 
-        let categoryId = tx.categoryId;
+        const categoryId = Number(tx.categoryId);
         if (!categoryId) {
-          const defaultCat = tipoValido === 'receita' ? 1 : 3;
-          categoryId = defaultCat;
-        } else {
-          const category = await Category.findByPk(categoryId);
-          if (!category) {
-            results.errors.push(`Linha ${i + 1}: Categoria não encontrada`);
-            results.failed++;
-            continue;
-          }
+          results.errors.push(`Linha ${i + 1}: Categoria inválida`);
+          results.failed++;
+          continue;
+        }
+
+        const category = await Category.findByPk(categoryId);
+        if (!category) {
+          results.errors.push(`Linha ${i + 1}: Categoria não encontrada`);
+          results.failed++;
+          continue;
+        }
+
+        const normalizedDescription = (tx.description || '').substring(0, 255).trim();
+        if (!normalizedDescription) {
+          results.errors.push(`Linha ${i + 1}: Descrição obrigatória`);
+          results.failed++;
+          continue;
         }
 
         await Transaction.create({
           transactionType: tipoValido,
           amount: amount,
           occurredOn: tx.occurredOn,
-          description: (tx.description || '').substring(0, 255).trim(),
+          description: normalizedDescription,
           categoryId: categoryId,
           bankId: bankId || null,
           userEmail: userEmail,
-          status: tx.status || 1
+          status: typeof tx.status === 'number' ? tx.status : 1
         });
 
         results.imported++;
