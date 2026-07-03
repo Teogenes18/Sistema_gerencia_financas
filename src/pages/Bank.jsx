@@ -23,6 +23,7 @@ import {
 } from '@mui/material';
 import { ArrowBack, Savings, Add } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+import { bankService } from '../services/BankService';
 import React from 'react';
 
 export default function Bank() {
@@ -49,7 +50,7 @@ export default function Bank() {
 
   const loadBanks = async () => {
     try {
-      const result = await window.api.listBanks();
+      const result = await bankService.listBanks();
       setBanks(result || []);
     } catch (error) {
       console.error("Erro ao carregar bancos", error);
@@ -82,7 +83,7 @@ export default function Bank() {
 
   const handleToggleStatus = async (id) => {
     try {
-      const result = await window.api.setBankStatus(id);
+      const result = await bankService.setBankStatus(id);
       if (result.success) {
         setApiMessage(result.message);
         setMessageSeverity('success');
@@ -112,7 +113,7 @@ export default function Bank() {
   const onSubmit = async (data) => {
     try {
       setApiMessage('');
-      const result = await window.api.addBank({
+      const result = await bankService.addBank({
         nome: data.nome.trim(),
         saldo: parseFloat(data.saldo)
       });

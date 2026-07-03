@@ -38,17 +38,22 @@
     "build": "^0.1.4",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
+    "crypto-browserify": "^3.12.1",
     "electron": "^38.1.2",
     "electron-rebuild": "^3.2.9",
+    "events": "^3.3.0",
     "install": "^0.13.0",
     "npm": "^11.6.2",
     "parcel": "^2.16.1",
     "parcel-reporter-static-files-copy": "^1.5.3",
+    "process": "^0.11.10",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-icons": "^5.5.0",
     "run": "^1.5.0",
-    "start": "^5.1.0"
+    "start": "^5.1.0",
+    "stream-browserify": "^3.0.0",
+    "vm-browserify": "^1.1.2"
   },
   "staticFiles": {
     "staticPath": "assets",

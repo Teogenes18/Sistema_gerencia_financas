@@ -42,6 +42,7 @@ import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import React from 'react';
 import ImportModal from '../pages/ImportModal';
+import categoryService from '../services/CategoryService';
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -129,7 +130,7 @@ export default function Home() {
   useEffect(() => {
     async function loadCategories() {
       try {
-        const cats = await window.api.listCategories();
+        const cats = await categoryService.listCategories();
         setCategories(Array.isArray(cats) ? cats : []);
       } catch (e) {
         console.error('Erro ao carregar categorias', e);

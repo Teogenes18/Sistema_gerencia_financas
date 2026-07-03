@@ -25,6 +25,7 @@ import {
 } from '@mui/material';
 import { FileUpload } from '@mui/icons-material';
 import Papa from 'papaparse';
+import categoryService from '../services/CategoryService';
 
 export default function ImportModal({ open, onClose, banks, userEmail, onImportSuccess }) {
   const [step, setStep] = useState(0);
@@ -44,7 +45,7 @@ export default function ImportModal({ open, onClose, banks, userEmail, onImportS
 
     const loadCategories = async () => {
       try {
-        const cats = await window.api.listCategories();
+        const cats = await categoryService.listCategories();
         setCategories(cats || []);
       } catch (error) {
         console.error('Erro ao carregar categorias:', error);

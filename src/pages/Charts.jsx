@@ -34,6 +34,7 @@ import {
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useAuth } from '../context/AuthContext';
+import categoryService from '../services/CategoryService';
 
 const COLORS = [
   '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
@@ -92,7 +93,7 @@ export default function Charts() {
     }
 
     try {
-      const cats = await window.api.listCategories();
+      const cats = await categoryService.listCategories();
       setCategories(Array.isArray(cats) ? cats : []);
     } catch (err) {
       console.error('Erro ao carregar categorias', err);

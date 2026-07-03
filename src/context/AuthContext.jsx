@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { userService } from '../services/UserService';
 
 const AuthContext = createContext();
 
@@ -12,7 +13,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  // const [userExists, setUserExists] = useState(true);
+  const [userExists, setUserExists] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,9 +22,11 @@ export function AuthProvider({ children }) {
 
   const checkUserExists = async () => {
     try {
-      // const result = await window.api.checkUserExists();
-      // setUserExists(result.userExists);
-      setLoading(false);
+      const result = await userService.checkUserExists();
+      setUserExists(Boolean(result?.userExists));
+      if (result?.userExists === false) {
+        setUser(null);
+      }
     } catch (error) {
       console.error('Erro ao verificar usuário existente:', error);
       setUserExists(true);
@@ -34,7 +37,7 @@ export function AuthProvider({ children }) {
 
   const login = async (credentials) => {
     try {
-      const result = await window.api.loginUser(credentials);
+      const result = await userService.loginUser(credentials);
       if (result.success) {
         setUser({
           id: result.userId,
@@ -50,7 +53,7 @@ export function AuthProvider({ children }) {
 
   const register = async (userData) => {
     try {
-      const result = await window.api.registerUser(userData);
+      const result = await userService.registerUser(userData);
       return result;
     } catch (error) {
       console.error('Erro ao registrar:', error);
@@ -64,6 +67,7 @@ export function AuthProvider({ children }) {
 
   const value = {
     user,
+    userExists,
     loading,
     login,
     register,
