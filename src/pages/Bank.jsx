@@ -200,16 +200,17 @@ export default function Bank() {
                         {bank.name}
                       </Typography>
                     }
+                    secondaryTypographyProps={{ component: 'div' }}
                     secondary={
                       <Stack direction="column" spacing={0.5} mt={0.5} sx={{ opacity: bank.isActive ? 1 : 0.5 }}>
                         <Typography variant="body2" component="span">
                           Saldo Inicial: {currencyFormatter.format(bank.balance)}
                         </Typography>
                         <Stack direction="row" alignItems="center" spacing={1}>
-                          <Typography variant="body2" fontWeight="bold">
+                          <Typography variant="body2" component="span" fontWeight="bold">
                             Saldo Atual:
                           </Typography>
-                          <Chip 
+                          <Chip
                             label={currencyFormatter.format(currentBalance)} 
                             color={isPositive ? "success" : "error"} 
                             size="small" 

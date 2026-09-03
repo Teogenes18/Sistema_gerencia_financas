@@ -190,8 +190,12 @@ export const apiClient = {
 };
 
 if (typeof window !== 'undefined') {
-  window.__ELECTRON__ = typeof window.__ELECTRON__ !== 'undefined' ? window.__ELECTRON__ : false;
-  window.api = window.api || apiClient;
+  if (typeof window.__ELECTRON__ === 'undefined') {
+    window.__ELECTRON__ = false;
+  }
+  if (typeof window.api === 'undefined') {
+    window.api = apiClient;
+  }
 }
 
 export default apiClient;
